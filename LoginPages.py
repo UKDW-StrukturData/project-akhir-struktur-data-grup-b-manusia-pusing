@@ -3,15 +3,33 @@ import streamlit as st
 # ====================== PAGE CONFIG ======================
 st.set_page_config(page_title="Money Changer", page_icon="💱", layout="wide")
 
+# ====================== HIDE AUTO PAGE TITLE "LoginPages" ======================
+if st.session_state.get("logged_in", False):
+    # Hanya sembunyikan LoginPages jika sudah login
+    st.markdown("""
+    <style>
+    [data-testid="stSidebarNav"] > div:first-child {
+        display: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # ====================== SESSION STATE INIT ======================
 if "page" not in st.session_state:
-    st.session_state.page = "signup"   # wajib sign up dulu
+    st.session_state.page = "signup"
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if "CREDENTIALS" not in st.session_state:
-    st.session_state.CREDENTIALS = {}  # kosong, harus signup dulu
+    st.session_state.CREDENTIALS = {}
+
+# ====================== LOGIN GUARD ======================
+def login_guard():
+    if not st.session_state.logged_in:
+        st.warning("Anda harus login terlebih dahulu.")
+        st.session_state.page = "login"
+        st.rerun()
 
 # ====================== HIDE SIDEBAR WHEN LOGGED OUT ======================
 if not st.session_state.logged_in:
@@ -21,7 +39,7 @@ if not st.session_state.logged_in:
         </style>
     """, unsafe_allow_html=True)
 
-# ====================== CSS STYLE (UI MIRIP GAMBAR) ======================
+# ====================== CSS STYLE LOGIN ======================
 st.markdown("""
 <style>
 body { background-color: #e8e8e8; }
@@ -35,7 +53,6 @@ body { background-color: #e8e8e8; }
     border-radius: 10px;
     border: 3px solid #c9c9c9;
 }
-
 .logo-box {
     width: 150px;
     margin: auto;
@@ -45,24 +62,16 @@ body { background-color: #e8e8e8; }
     font-weight: bold;
     margin-bottom: 25px;
 }
-
 .title {
     font-size: 28px;
     font-weight: 700;
     text-align: center;
     margin-bottom: 25px;
 }
-.link-center {
-    text-align:center;
-    margin-top:15px;
-}
-.google-btn img {
-    margin-top: 12px;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# ====================== PAGE ROUTER ======================
+# ====================== HELPER PAGE ROUTER ======================
 def goto(page):
     st.session_state.page = page
     st.rerun()
@@ -80,26 +89,16 @@ def page_login():
         if username in st.session_state.CREDENTIALS and st.session_state.CREDENTIALS[username] == password:
             st.session_state.logged_in = True
             st.session_state.username = username
-
-            # ====================== REDIRECT KE HOME ======================
             st.switch_page("pages/Home.py")
-
         else:
             st.error("Username atau password salah!")
 
-    st.markdown("<p style='text-align:center;'>or continue with</p>", unsafe_allow_html=True)
-    st.markdown(
-        '<div class="google-btn" style="text-align:center;"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_2013_Google.png" width="40"></div>',
-        unsafe_allow_html=True,
-    )
-
-    st.write("")
     if st.button("Go to Sign Up"):
         goto("signup")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# ====================== SIGN UP PAGE ======================
+# ====================== SIGNUP PAGE ======================
 def page_signup():
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
     st.markdown('<div class="logo-box">LOGO</div>', unsafe_allow_html=True)
@@ -118,26 +117,30 @@ def page_signup():
             st.error("Password tidak cocok")
         else:
             st.session_state.CREDENTIALS[new_user] = new_pass
-            st.success("Akun berhasil dibuat! Silakan login.")
+            st.success("Akun berhasil dibuat!")
             goto("login")
 
-    st.write("")
     if st.button("Back to Login"):
         goto("login")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# ====================== DASHBOARD PAGE (tidak terpakai untuk pindah layar) ======================
+# ====================== DASHBOARD PAGE ======================
 def page_dashboard():
+    login_guard()
+
     st.sidebar.title("💱 Money Changer Admin Panel")
-    st.sidebar.write("Menu aplikasi di sini…")
+    st.sidebar.write("Menu aplikasi…")
 
     st.title("Selamat Datang di Dashboard Money Changer!")
     st.success(f"Anda login sebagai: {st.session_state.username}")
 
-    if st.button("Logout"):
+    # ---- LOGOUT BUTTON PALING BAWAH ----
+    st.sidebar.markdown("----")
+    if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
-        goto("login")
+        st.session_state.page = "login"
+        st.rerun()
 
 # ====================== PROTECT ROUTES ======================
 if not st.session_state.logged_in:
