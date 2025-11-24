@@ -1,156 +1,104 @@
 import streamlit as st
+import os
 
-# ====================== PAGE CONFIG ======================
-st.set_page_config(page_title="Money Changer", page_icon="💱", layout="wide")
+st.set_page_config(page_title="NeuvaMoneda", layout="wide")
 
-# ====================== HIDE AUTO PAGE TITLE "LoginPages" ======================
-if st.session_state.get("logged_in", False):
-    # Hanya sembunyikan LoginPages jika sudah login
-    st.markdown("""
-    <style>
-    [data-testid="stSidebarNav"] > div:first-child {
-        display: none !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+#mengeksekusi file css dengan batuuan CHAT GPT
+def load_css():
+    css_file = "styles.css"
+    if os.path.exists(css_file):
+        with open(css_file) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+load_css()
 
-# ====================== SESSION STATE INIT ======================
+
 if "page" not in st.session_state:
     st.session_state.page = "signup"
-
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-
+if "username" not in st.session_state:
+    st.session_state.username = ""
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {}
 
-# ====================== LOGIN GUARD ======================
+# Fungsi GUARD dibantu untuk CHAT GPT
 def login_guard():
     if not st.session_state.logged_in:
-        st.warning("Anda harus login terlebih dahulu.")
+        st.warning("Silakan login terlebih dahulu.")
         st.session_state.page = "login"
         st.rerun()
 
-# ====================== HIDE SIDEBAR WHEN LOGGED OUT ======================
-if not st.session_state.logged_in:
-    st.markdown("""
-        <style>
-            [data-testid="stSidebar"] {display: none;}
-        </style>
-    """, unsafe_allow_html=True)
-
-# ====================== CSS STYLE LOGIN ======================
-st.markdown("""
-<style>
-body { background-color: #e8e8e8; }
-
-.login-container {
-    width: 420px;
-    margin: auto;
-    margin-top: 50px;
-    background: white;
-    padding: 45px 40px;
-    border-radius: 10px;
-    border: 3px solid #c9c9c9;
-}
-.logo-box {
-    width: 150px;
-    margin: auto;
-    padding: 8px;
-    border: 1px solid black;
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 25px;
-}
-.title {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 25px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ====================== HELPER PAGE ROUTER ======================
-def goto(page):
+def pindahhalaman(page):
     st.session_state.page = page
     st.rerun()
 
-# ====================== LOGIN PAGE ======================
-def page_login():
+def LoginPages():
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
     st.markdown('<div class="logo-box">LOGO</div>', unsafe_allow_html=True)
-    st.markdown('<div class="title">Welcome Back 👋</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">Selamat Datang Kembali!</div>', unsafe_allow_html=True)
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
-    if st.button("Continue"):
+    if st.button("Masuk"):
         if username in st.session_state.CREDENTIALS and st.session_state.CREDENTIALS[username] == password:
             st.session_state.logged_in = True
             st.session_state.username = username
             st.switch_page("pages/Home.py")
         else:
-            st.error("Username atau password salah!")
+            st.error("Username atau password salah.")
 
-    if st.button("Go to Sign Up"):
-        goto("signup")
+    if st.button("Belum punya akun? Daftar"):
+        pindahhalaman("signup")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ====================== SIGNUP PAGE ======================
-def page_signup():
+def SignUpPages():
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
     st.markdown('<div class="logo-box">LOGO</div>', unsafe_allow_html=True)
-    st.markdown('<div class="title">Create Account</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">Buat Akun Baru</div>', unsafe_allow_html=True)
 
     new_user = st.text_input("Username")
     new_pass = st.text_input("Password", type="password")
-    confirm = st.text_input("Confirm Password", type="password")
+    confirm = st.text_input("Konfirmasi Password", type="password")
 
-    if st.button("Sign Up"):
+    if st.button("Daftar"):
         if new_user == "" or new_pass == "":
-            st.error("Semua field harus diisi")
+            st.error("Semua kolom wajib diisi.")
         elif new_user in st.session_state.CREDENTIALS:
-            st.error("Username sudah digunakan")
+            st.error("Username sudah digunakan.")
         elif new_pass != confirm:
-            st.error("Password tidak cocok")
+            st.error("Password tidak cocok.")
         else:
             st.session_state.CREDENTIALS[new_user] = new_pass
-            st.success("Akun berhasil dibuat!")
-            goto("login")
+            st.success("Akun berhasil dibuat! Silakan login.")
+            pindahhalaman("login")
 
-    if st.button("Back to Login"):
-        goto("login")
+    if st.button("Kembali ke Login"):
+        pindahhalaman("login")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ====================== DASHBOARD PAGE ======================
 def page_dashboard():
     login_guard()
 
-    st.sidebar.title("💱 Money Changer Admin Panel")
-    st.sidebar.write("Menu aplikasi…")
+    st.sidebar.title("NeuvaMoneda — Admin Panel")
+    st.sidebar.write("Pilih menu aplikasi.")
 
-    st.title("Selamat Datang di Dashboard Money Changer!")
-    st.success(f"Anda login sebagai: {st.session_state.username}")
+    st.title(f"Halo, {st.session_state.username} 👋")
+    st.success("Selamat datang di Dashboard NeuvaMoneda!")
 
-    # ---- LOGOUT BUTTON PALING BAWAH ----
-    st.sidebar.markdown("----")
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.page = "login"
         st.rerun()
 
-# ====================== PROTECT ROUTES ======================
-if not st.session_state.logged_in:
-    if st.session_state.page not in ["login", "signup"]:
-        st.session_state.page = "signup"
+if not st.session_state.logged_in and st.session_state.page not in ["login", "signup"]:
+    st.session_state.page = "signup"
 
-# ====================== MAIN ROUTER ======================
 if st.session_state.page == "login":
-    page_login()
+    LoginPages()
 elif st.session_state.page == "signup":
-    page_signup()
+    SignUpPages()
 else:
     page_dashboard()
