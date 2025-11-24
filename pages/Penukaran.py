@@ -3,9 +3,7 @@ import requests
 import json
 from datetime import datetime
 
-# -------------------------------- #
-#  CEK LOGIN (WAJIB)
-# -------------------------------- #
+
 
 def require_login():
     """Cek apakah user sudah login sebelum membuka halaman ini."""
@@ -18,9 +16,7 @@ require_login()
 st.title("Fitur Penukaran Mata Uang")
 st.caption("Halaman ini masih dalam tahap pengembangan.")
 
-# -------------------------------- #
-#  API NILAI TUKAR (Real-Time)
-# -------------------------------- #
+
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/IDR"
 
@@ -34,7 +30,7 @@ def fetch_exchange_rate():
 
         raw = res.json()
 
-        # simpan data penting ke file JSON
+        # simpan data penting ke file JSON dibantu oleh chat GPT
         save_data = {
             "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "base": raw.get("base"),
@@ -52,9 +48,9 @@ def fetch_exchange_rate():
         return None
 
 
-# -------------------------------- #
-#  KONVERSI MATA UANG
-# -------------------------------- #
+# ----------------------------------------- #
+#  KONVERSI MATA UANG DIBANTU OLEH CHAT GPT
+# ----------------------------------------- #
 
 def convert_currency(amount, source, target, rates):
     """
@@ -77,9 +73,9 @@ def convert_currency(amount, source, target, rates):
     return idr_base * rates[target]
 
 
-# -------------------------------- #
-#  ANALISIS PROFIT (Gemini AI)
-# -------------------------------- #
+# -------------------------------------------------- #
+#  ANALISIS PROFIT (Gemini AI) DIBANTU OLEH CHAT GPT
+# -------------------------------------------------- #
 
 GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
 
@@ -104,9 +100,9 @@ def gemini_profit_analysis(amount, rates):
         return f"Tidak dapat terhubung ke Gemini: {err}"
 
 
-# -------------------------------- #
-#  USER INTERFACE – PENUKARAN UANG
-# -------------------------------- #
+# ------------------------------------------------------ #
+#  USER INTERFACE – PENUKARAN UANG DIBANTU OLEH CHAT GPT
+# ------------------------------------------------------ #
 
 data = fetch_exchange_rate()
 
