@@ -1,11 +1,151 @@
 import streamlit as st
+import requests
+import json
+from datetime import datetime
+
+# -------------------------------- #
+#  CEK LOGIN (WAJIB)
+# -------------------------------- #
 
 def require_login():
-    if "logged_in" not in st.session_state or st.session_state.logged_in is False:
-        st.warning("Anda harus login untuk mengakses halaman ini.")
+    """Cek apakah user sudah login sebelum membuka halaman ini."""
+    if not st.session_state.get("logged_in", False):
+        st.warning("Silakan login terlebih dahulu.")
         st.switch_page("LoginPages.py")
+
 require_login()
 
-st.title("Penukaran Uang")
-st.write("proses pengembangan")
+st.title("Fitur Penukaran Mata Uang")
+st.caption("Halaman ini masih dalam tahap pengembangan.")
 
+# -------------------------------- #
+#  API NILAI TUKAR (Real-Time)
+# -------------------------------- #
+
+API_URL = "https://api.exchangerate-api.com/v4/latest/IDR"
+
+def fetch_exchange_rate():
+    """Mengambil data nilai tukar dan menyimpannya ke file JSON."""
+    try:
+        res = requests.get(API_URL)
+        if res.status_code != 200:
+            st.error("Tidak dapat menghubungi API nilai tukar.")
+            return None
+
+        raw = res.json()
+
+        # simpan data penting ke file JSON
+        save_data = {
+            "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "base": raw.get("base"),
+            "date": raw.get("date"),
+            "rates": raw.get("rates")
+        }
+
+        with open("exchange_rate_data.json", "w") as outfile:
+            json.dump(save_data, outfile, indent=4)
+
+        return raw
+
+    except Exception as err:
+        st.error(f"Terjadi error saat mengambil data: {err}")
+        return None
+
+
+# -------------------------------- #
+#  KONVERSI MATA UANG
+# -------------------------------- #
+
+def convert_currency(amount, source, target, rates):
+    """
+    Mengonversi nilai mata uang
+    - Konversi ke IDR sebagai dasar
+    - Konversi dari IDR ke mata uang tujuan
+    """
+
+    # ubah ke IDR
+    if source == "IDR":
+        idr_base = amount
+    else:
+        idr_base = amount / rates[source]
+
+    # jika tujuan langsung IDR
+    if target == "IDR":
+        return idr_base
+
+    # ubah ke mata uang tujuan
+    return idr_base * rates[target]
+
+
+# -------------------------------- #
+#  ANALISIS PROFIT (Gemini AI)
+# -------------------------------- #
+
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+
+def gemini_profit_analysis(amount, rates):
+    """Menghasilkan analisis sederhana dengan Gemini AI."""
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=GEMINI_API_KEY)
+
+        prompt = (
+            "Kamu adalah analis keuangan. Buatkan analisis strategi "
+            "penukaran mata uang berdasarkan data berikut:\n\n"
+            f"Jumlah uang: {amount}\n"
+            f"Nilai tukar: {json.dumps(rates)}"
+        )
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        return response.text
+
+    except Exception as err:
+        return f"Tidak dapat terhubung ke Gemini: {err}"
+
+
+# -------------------------------- #
+#  USER INTERFACE – PENUKARAN UANG
+# -------------------------------- #
+
+data = fetch_exchange_rate()
+
+if data:
+    rates = data["rates"]
+
+    st.subheader("Hitung Konversi Mata Uang")
+
+    jumlah = st.number_input("Masukkan nominal:", min_value=1.0)
+    asal = st.selectbox("Mata uang asal:", sorted(rates.keys()))
+    tujuan = st.selectbox("Mata uang tujuan:", sorted(rates.keys()))
+
+    if st.button("Konversi Sekarang"):
+        hasil = convert_currency(jumlah, asal, tujuan, rates)
+
+        # cari nilai rupiah awal
+        idr_awal = jumlah if asal == "IDR" else jumlah / rates[asal]
+
+        # cari nilai rupiah akhir
+        idr_akhir = hasil if tujuan == "IDR" else hasil / rates[tujuan]
+
+        selisih = idr_akhir - idr_awal
+
+        # ambil username dari session login
+        admin = st.session_state.get("username", "Tidak diketahui")
+        tanggal = datetime.now().strftime("%d-%m-%Y")
+
+        st.success(
+            f"**Nilai Awal (IDR):** Rp {idr_awal:,.2f}\n"
+            f"**Hasil Konversi:** {hasil:,.2f} {tujuan}\n"
+            f"**Selisih / Profit:** Rp {selisih:,.2f}\n"
+            f"**Tanggal:** {tanggal}\n"
+            f"**Admin:** {admin}"
+        )
+
+    st.subheader("Analisis Profit Otomatis (Gemini)")
+
+    if st.button("Jalankan Analisis AI"):
+        st.info(gemini_profit_analysis(jumlah, rates))
+
+else:
+    st.error("Tidak dapat memuat nilai tukar.")
