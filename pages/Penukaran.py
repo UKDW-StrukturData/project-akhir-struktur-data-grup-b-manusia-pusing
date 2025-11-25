@@ -28,7 +28,7 @@ def fetch_exchange_rate():
 
         raw = res.json()
 
-        # simpan data penting ke file JSON dibantu oleh chat GPT
+    # simpan data penting ke file JSON dibantu oleh chat GPT
         save_data = {
             "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "base": raw.get("base"),
