@@ -1,6 +1,7 @@
 import streamlit as st
 
 def signup_page():
+    # pembuatan markdown dibantu oleh GPT
     st.markdown('<div class="login-container">', unsafe_allow_html=True)
     st.markdown('<div class="logo-box">LOGO</div>', unsafe_allow_html=True)
     st.markdown('<div class="title">Buat Akun Baru</div>', unsafe_allow_html=True)
