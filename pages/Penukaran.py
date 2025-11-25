@@ -18,6 +18,8 @@ require_login()
 st.title("Fitur Penukaran Mata Uang")
 st.caption("Halaman ini masih dalam tahap pengembangan.")
 
+
+
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
 
@@ -49,53 +51,55 @@ def fetch_exchange_rate():
         return None
 
 
-# ==========================
-# KONVERSI MARKET (tanpa profit)
-# ==========================
+# ----------------------------------------- #
+#  KONVERSI MATA UANG DIBANTU OLEH CHAT GPT
+# ----------------------------------------- #
+
 def convert_currency(amount, source, target, rates):
-    if source == target:
-        return amount
-
-    # Ubah ke USD
-    usd_amount = amount / rates[source] if source != "USD" else amount
-
-    # USD ke target
-    return usd_amount * rates[target]
 
 
-# ==========================
-# GEMINI – PROFIT OTOMATIS
-# ==========================
-GEMINI_API_KEY = "AIzaSyD-1_unReCLUvxQ9DM5of8-m-sygFRxsQI"
-genai.configure(api_key=GEMINI_API_KEY)
+    # ubah ke IDR
+    if source == "IDR":
+        idr_base = amount
+    else:
+        idr_base = amount / rates[source]
 
-def gemini_get_profit(rates, amount, source, target):
-    prompt = f"""
-Kamu adalah analis money changer profesional.
-Tentukan persentase profit TERBAIK untuk transaksi berikut:
+    # jika tujuan langsung IDR
+    if target == "IDR":
+        return idr_base
 
-Jumlah: {amount}
-Dari mata uang: {source}
-Ke mata uang: {target}
-Rates lengkap: {json.dumps(rates)}
+    # ubah ke mata uang tujuan
+    return idr_base * rates[target]
 
-Berikan:
-1. Angka profit dalam persen (%) saja, TANPA simbol, misal: 3.5
-2. Jangan berikan penjelasan lain.
-"""
 
-    model = genai.GenerativeModel("gemini-2.5-flash")
-    response = model.generate_content(prompt)
+# -------------------------------------------------- #
+#  ANALISIS PROFIT (Gemini AI) DIBANTU OLEH CHAT GPT
+# -------------------------------------------------- #
 
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+
+def gemini_profit_analysis(amount, rates):
     try:
-        return float(response.text.strip())
-    except:
-        return 2.0  # fallback
+        import google.generativeai as genai
+        genai.configure(api_key=GEMINI_API_KEY)
+
+        prompt = (
+            f"Jumlah uang: {amount}\n"
+            f"Nilai tukar: {json.dumps(rates)}"
+        )
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        return response.text
+
+    except Exception as err:
+        return f"Tidak dapat terhubung ke Gemini: {err}"
 
 
-# ==========================
-# UI – PENUKARAN UANG
-# ==========================
+# ------------------------------------------------------ #
+#  USER INTERFACE – PENUKARAN UANG DIBANTU OLEH CHAT GPT
+# ------------------------------------------------------ #
+
 data = fetch_exchange_rate()
 
 if data:
@@ -118,20 +122,15 @@ if data:
         # hasil market (tanpa profit)
         market_result = convert_currency(jumlah, asal, tujuan, rates)
 
-        # ambil profit dari Gemini
-        profit_rate = gemini_get_profit(rates, jumlah, asal, tujuan)
+        # cari nilai rupiah awal
+        idr_awal = jumlah if asal == "IDR" else jumlah / rates[asal]
 
-        # terapkan rumus sesuai jenis transaksi
-        if jenis_transaksi == "Kurs Jual (Admin menjual valas)":
-            hasil_final = market_result * (1 + (profit_rate / 100))
-        else:  # Kurs Beli
-            hasil_final = market_result * (1 - (profit_rate / 100))
+        # cari nilai rupiah akhir
+        idr_akhir = hasil if tujuan == "IDR" else hasil / rates[tujuan]
 
-        # Hitung profit IDR (selisih antara hasil_final dan market_result)
-        profit_value_usd = hasil_final - market_result
-        profit_value_idr = profit_value_usd * rates["IDR"]
+        selisih = idr_akhir - idr_awal
 
-        # Tanggal & admin
+        # ambil username dari session login
         admin = st.session_state.get("username", "Tidak diketahui")
         tanggal = datetime.now().strftime("%d-%m-%Y")
 
@@ -148,9 +147,15 @@ if data:
 
         **Tanggal               :** {tanggal}
 
-        **Admin                 :** {admin}
+        **Admin:** {admin}
         """
         )
+
+
+    st.subheader("Analisis Profit Otomatis (Gemini)")
+
+    if st.button("Jalankan Analisis AI"):
+        st.info(gemini_profit_analysis(jumlah, rates))
 
 else:
     st.error("Tidak dapat memuat nilai tukar.")
