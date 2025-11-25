@@ -6,7 +6,6 @@ from datetime import datetime
 
 
 def require_login():
-    """Cek apakah user sudah login sebelum membuka halaman ini."""
     if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
         st.switch_page("LoginPages.py")
@@ -21,7 +20,6 @@ st.caption("Halaman ini masih dalam tahap pengembangan.")
 API_URL = "https://api.exchangerate-api.com/v4/latest/IDR"
 
 def fetch_exchange_rate():
-    """Mengambil data nilai tukar dan menyimpannya ke file JSON."""
     try:
         res = requests.get(API_URL)
         if res.status_code != 200:
@@ -53,11 +51,7 @@ def fetch_exchange_rate():
 # ----------------------------------------- #
 
 def convert_currency(amount, source, target, rates):
-    """
-    Mengonversi nilai mata uang
-    - Konversi ke IDR sebagai dasar
-    - Konversi dari IDR ke mata uang tujuan
-    """
+
 
     # ubah ke IDR
     if source == "IDR":
@@ -80,14 +74,11 @@ def convert_currency(amount, source, target, rates):
 GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
 
 def gemini_profit_analysis(amount, rates):
-    """Menghasilkan analisis sederhana dengan Gemini AI."""
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
 
         prompt = (
-            "Kamu adalah analis keuangan. Buatkan analisis strategi "
-            "penukaran mata uang berdasarkan data berikut:\n\n"
             f"Jumlah uang: {amount}\n"
             f"Nilai tukar: {json.dumps(rates)}"
         )
