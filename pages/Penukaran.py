@@ -2,9 +2,12 @@ import streamlit as st
 import requests
 import json
 from datetime import datetime
+import google.generativeai as genai
 
 
-
+# ==========================
+# LOGIN PROTECTION
+# ==========================
 def require_login():
     if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
@@ -15,20 +18,20 @@ require_login()
 st.title("Fitur Penukaran Mata Uang")
 st.caption("Halaman ini masih dalam tahap pengembangan.")
 
-
-
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
+
+# ==========================
+# AMBIL DATA KURS
+# ==========================
 def fetch_exchange_rate():
     try:
         res = requests.get(API_URL)
         if res.status_code != 200:
             st.error("Tidak dapat menghubungi API nilai tukar.")
             return None
-
         raw = res.json()
 
-    # simpan data penting ke file JSON dibantu oleh chat GPT
         save_data = {
             "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "base": raw.get("base"),
@@ -46,55 +49,53 @@ def fetch_exchange_rate():
         return None
 
 
-# ----------------------------------------- #
-#  KONVERSI MATA UANG DIBANTU OLEH CHAT GPT
-# ----------------------------------------- #
-
+# ==========================
+# KONVERSI MARKET (tanpa profit)
+# ==========================
 def convert_currency(amount, source, target, rates):
+    if source == target:
+        return amount
+
+    # Ubah ke USD
+    usd_amount = amount / rates[source] if source != "USD" else amount
+
+    # USD ke target
+    return usd_amount * rates[target]
 
 
-    # ubah ke IDR
-    if source == "IDR":
-        idr_base = amount
-    else:
-        idr_base = amount / rates[source]
+# ==========================
+# GEMINI – PROFIT OTOMATIS
+# ==========================
+GEMINI_API_KEY = "AIzaSyD-1_unReCLUvxQ9DM5of8-m-sygFRxsQI"
+genai.configure(api_key=GEMINI_API_KEY)
 
-    # jika tujuan langsung IDR
-    if target == "IDR":
-        return idr_base
+def gemini_get_profit(rates, amount, source, target):
+    prompt = f"""
+Kamu adalah analis money changer profesional.
+Tentukan persentase profit TERBAIK untuk transaksi berikut:
 
-    # ubah ke mata uang tujuan
-    return idr_base * rates[target]
+Jumlah: {amount}
+Dari mata uang: {source}
+Ke mata uang: {target}
+Rates lengkap: {json.dumps(rates)}
 
+Berikan:
+1. Angka profit dalam persen (%) saja, TANPA simbol, misal: 3.5
+2. Jangan berikan penjelasan lain.
+"""
 
-# -------------------------------------------------- #
-#  ANALISIS PROFIT (Gemini AI) DIBANTU OLEH CHAT GPT
-# -------------------------------------------------- #
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(prompt)
 
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
-
-def gemini_profit_analysis(amount, rates):
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
-
-        prompt = (
-            f"Jumlah uang: {amount}\n"
-            f"Nilai tukar: {json.dumps(rates)}"
-        )
-
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
-        return response.text
-
-    except Exception as err:
-        return f"Tidak dapat terhubung ke Gemini: {err}"
+        return float(response.text.strip())
+    except:
+        return 2.0  # fallback
 
 
-# ------------------------------------------------------ #
-#  USER INTERFACE – PENUKARAN UANG DIBANTU OLEH CHAT GPT
-# ------------------------------------------------------ #
-
+# ==========================
+# UI – PENUKARAN UANG
+# ==========================
 data = fetch_exchange_rate()
 
 if data:
@@ -106,40 +107,50 @@ if data:
     asal = st.selectbox("Mata uang asal:", sorted(rates.keys()))
     tujuan = st.selectbox("Mata uang tujuan:", sorted(rates.keys()))
 
+    # Opsi Kurs Beli / Kurs Jual
+    jenis_transaksi = st.selectbox(
+        "Jenis Transaksi",
+        ["Kurs Jual (Admin menjual valas)", "Kurs Beli (Admin membeli valas)"]
+    )
+
     if st.button("Konversi Sekarang"):
-        hasil = convert_currency(jumlah, asal, tujuan, rates)
 
-        # cari nilai rupiah awal
-        idr_awal = jumlah if asal == "IDR" else jumlah / rates[asal]
+        # hasil market (tanpa profit)
+        market_result = convert_currency(jumlah, asal, tujuan, rates)
 
-        # cari nilai rupiah akhir
-        idr_akhir = hasil if tujuan == "IDR" else hasil / rates[tujuan]
+        # ambil profit dari Gemini
+        profit_rate = gemini_get_profit(rates, jumlah, asal, tujuan)
 
-        selisih = idr_akhir - idr_awal
+        # terapkan rumus sesuai jenis transaksi
+        if jenis_transaksi == "Kurs Jual (Admin menjual valas)":
+            hasil_final = market_result * (1 + (profit_rate / 100))
+        else:  # Kurs Beli
+            hasil_final = market_result * (1 - (profit_rate / 100))
 
-        # ambil username dari session login
+        # Hitung profit IDR (selisih antara hasil_final dan market_result)
+        profit_value_usd = hasil_final - market_result
+        profit_value_idr = profit_value_usd * rates["IDR"]
+
+        # Tanggal & admin
         admin = st.session_state.get("username", "Tidak diketahui")
         tanggal = datetime.now().strftime("%d-%m-%Y")
 
+        # ===============================
+        # FORMAT OUTPUT
+        # ===============================
         st.success(
         f"""
-        **Nilai Awal (IDR):** Rp {idr_awal:,.2f}
+        **Nilai Uang Awal  :** {jumlah:,.2f} {asal}
 
-        **Hasil Konversi:** {hasil:,.2f} {tujuan}
+        **Hasil Konversi     :** {hasil_final:,.2f} {tujuan}
 
-        **Selisih / Profit:** Rp {selisih:,.2f}
+        **Profit Penukaran :** Rp {profit_value_idr:,.2f}
 
-        **Tanggal:** {tanggal}
+        **Tanggal               :** {tanggal}
 
-        **Admin:** {admin}
+        **Admin                 :** {admin}
         """
         )
-
-
-    st.subheader("Analisis Profit Otomatis (Gemini)")
-
-    if st.button("Jalankan Analisis AI"):
-        st.info(gemini_profit_analysis(jumlah, rates))
 
 else:
     st.error("Tidak dapat memuat nilai tukar.")
