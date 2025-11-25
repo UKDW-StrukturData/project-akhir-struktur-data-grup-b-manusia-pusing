@@ -17,7 +17,7 @@ st.caption("Halaman ini masih dalam tahap pengembangan.")
 
 
 
-API_URL = "https://api.exchangerate-api.com/v4/latest/IDR"
+API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
 def fetch_exchange_rate():
     try:
