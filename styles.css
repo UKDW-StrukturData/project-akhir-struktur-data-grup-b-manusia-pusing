@@ -1,0 +1,40 @@
+body { 
+    background-color: #e8e8e8; 
+}
+
+.login-container {
+    width: 420px;
+    margin: auto;
+    margin-top: 50px;
+    background: white;
+    padding: 45px 40px;
+    border-radius: 10px;
+    border: 3px solid #c9c9c9;
+}
+
+.logo-box {
+    width: 150px;
+    margin: auto;
+    padding: 8px;
+    border: 1px solid black;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* Hide sidebar saat belum login */
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+/* Hide halaman LoginPages setelah login */
+[data-testid="stSidebarNav"] > div:first-child {
+    display: none !important;
+}
