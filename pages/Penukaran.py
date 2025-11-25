@@ -122,12 +122,19 @@ if data:
         tanggal = datetime.now().strftime("%d-%m-%Y")
 
         st.success(
-            f"**Nilai Awal (IDR):** Rp {idr_awal:,.2f}\n"
-            f"**Hasil Konversi:** {hasil:,.2f} {tujuan}\n"
-            f"**Selisih / Profit:** Rp {selisih:,.2f}\n"
-            f"**Tanggal:** {tanggal}\n"
-            f"**Admin:** {admin}"
+        f"""
+        **Nilai Awal (IDR):** Rp {idr_awal:,.2f}
+
+        **Hasil Konversi:** {hasil:,.2f} {tujuan}
+
+        **Selisih / Profit:** Rp {selisih:,.2f}
+
+        **Tanggal:** {tanggal}
+
+        **Admin:** {admin}
+        """
         )
+
 
     st.subheader("Analisis Profit Otomatis (Gemini)")
 
