@@ -13,7 +13,6 @@ def require_login():
 require_login()
 
 st.title("Fitur Penukaran Mata Uang")
-st.caption("Halaman ini masih dalam tahap pengembangan.")
 
 
 
@@ -28,7 +27,6 @@ def fetch_exchange_rate():
 
         raw = res.json()
 
-    # simpan data penting ke file JSON dibantu oleh chat GPT
         save_data = {
             "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "base": raw.get("base"),
@@ -46,29 +44,22 @@ def fetch_exchange_rate():
         return None
 
 
-# ----------------------------------------- #
-#  KONVERSI MATA UANG DIBANTU OLEH CHAT GPT
-# ----------------------------------------- #
 
 def convert_currency(amount, source, target, rates):
 
-
-    # ubah ke IDR
-    if source == "IDR":
-        idr_base = amount
+    if source == "USD":
+        usd_value = amount
     else:
-        idr_base = amount / rates[source]
+        usd_value = amount / rates[source]
 
-    # jika tujuan langsung IDR
-    if target == "IDR":
-        return idr_base
-
-    # ubah ke mata uang tujuan
-    return idr_base * rates[target]
+    if target == "USD":
+        return usd_value
+    else:
+        return usd_value * rates[target]
 
 
 # -------------------------------------------------- #
-#  ANALISIS PROFIT (Gemini AI) DIBANTU OLEH CHAT GPT
+#  ANALISIS PROFIT (Gemini AI) DIBANTU OLEH GPT
 # -------------------------------------------------- #
 
 GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
@@ -92,7 +83,7 @@ def gemini_profit_analysis(amount, rates):
 
 
 # ------------------------------------------------------ #
-#  USER INTERFACE – PENUKARAN UANG DIBANTU OLEH CHAT GPT
+#  USER INTERFACE DIBANTU OLEH GPT
 # ------------------------------------------------------ #
 
 data = fetch_exchange_rate()
@@ -109,15 +100,20 @@ if data:
     if st.button("Konversi Sekarang"):
         hasil = convert_currency(jumlah, asal, tujuan, rates)
 
-        # cari nilai rupiah awal
-        idr_awal = jumlah if asal == "IDR" else jumlah / rates[asal]
+        if asal == "IDR":
+            idr_awal = jumlah
+        else:
+            usd_value = jumlah / rates[asal]
+            idr_awal = usd_value * rates["IDR"]
 
-        # cari nilai rupiah akhir
-        idr_akhir = hasil if tujuan == "IDR" else hasil / rates[tujuan]
+        if tujuan == "IDR":
+            idr_akhir = hasil
+        else:
+            usd_value = hasil / rates[tujuan]
+            idr_akhir = usd_value * rates["IDR"]
 
         selisih = idr_akhir - idr_awal
 
-        # ambil username dari session login
         admin = st.session_state.get("username", "Tidak diketahui")
         tanggal = datetime.now().strftime("%d-%m-%Y")
 
@@ -134,7 +130,6 @@ if data:
         **Admin:** {admin}
         """
         )
-
 
     st.subheader("Analisis Profit Otomatis (Gemini)")
 
