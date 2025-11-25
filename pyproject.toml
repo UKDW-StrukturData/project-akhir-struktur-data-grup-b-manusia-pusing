@@ -10,3 +10,8 @@ dependencies = [
     "requests>=2.32.5",
     "streamlit>=1.51.0",
 ]
+
+[tool.uv.workspace]
+members = [
+    "pandas",
+]
