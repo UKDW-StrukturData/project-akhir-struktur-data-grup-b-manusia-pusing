@@ -4,10 +4,7 @@ import json
 from datetime import datetime
 import google.generativeai as genai
 
-
-# ==========================
-# LOGIN PROTECTION
-# ==========================
+# LOGIN GUARD dibantu oleh GPT
 def require_login():
     if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
@@ -16,16 +13,9 @@ def require_login():
 require_login()
 
 st.title("Fitur Penukaran Mata Uang")
-st.caption("Halaman ini masih dalam tahap pengembangan.")
-
-
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
-
-# ==========================
-# AMBIL DATA KURS
-# ==========================
 def fetch_exchange_rate():
     try:
         res = requests.get(API_URL)
@@ -50,55 +40,37 @@ def fetch_exchange_rate():
         st.error(f"Terjadi error saat mengambil data: {err}")
         return None
 
-
-# ----------------------------------------- #
-#  KONVERSI MATA UANG DIBANTU OLEH CHAT GPT
-# ----------------------------------------- #
-
 def convert_currency(amount, source, target, rates):
+    if source == target:
+        return amount
 
+    usd_amount = amount / rates[source] if source != "USD" else amount
 
-    # ubah ke IDR
-    if source == "IDR":
-        idr_base = amount
-    else:
-        idr_base = amount / rates[source]
+    return usd_amount * rates[target]
 
-    # jika tujuan langsung IDR
-    if target == "IDR":
-        return idr_base
+# pembuatan fungsi profit dibantu oleh GPT & ASDOS
+GEMINI_API_KEY = "AIzaSyD-1_unReCLUvxQ9DM5of8-m-sygFRxsQI"
+genai.configure(api_key=GEMINI_API_KEY)
 
-    # ubah ke mata uang tujuan
-    return idr_base * rates[target]
+def gemini_get_profit(rates, amount, source, target):
+    prompt = f"""
+Kamu adalah analis money changer profesional.
+Tentukan persentase profit TERBAIK untuk transaksi berikut:
 
+Jumlah: {amount}
+Dari mata uang: {source}
+Ke mata uang: {target}
+Rates lengkap: {json.dumps(rates)}
+"""
 
-# -------------------------------------------------- #
-#  ANALISIS PROFIT (Gemini AI) DIBANTU OLEH CHAT GPT
-# -------------------------------------------------- #
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    response = model.generate_content(prompt)
 
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
-
-def gemini_profit_analysis(amount, rates):
     try:
-        import google.generativeai as genai
-        genai.configure(api_key=GEMINI_API_KEY)
+        return float(response.text.strip())
+    except:
+        return 2.0
 
-        prompt = (
-            f"Jumlah uang: {amount}\n"
-            f"Nilai tukar: {json.dumps(rates)}"
-        )
-
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
-        return response.text
-
-    except Exception as err:
-        return f"Tidak dapat terhubung ke Gemini: {err}"
-
-
-# ------------------------------------------------------ #
-#  USER INTERFACE – PENUKARAN UANG DIBANTU OLEH CHAT GPT
-# ------------------------------------------------------ #
 
 data = fetch_exchange_rate()
 
@@ -111,32 +83,17 @@ if data:
     asal = st.selectbox("Mata uang asal:", sorted(rates.keys()))
     tujuan = st.selectbox("Mata uang tujuan:", sorted(rates.keys()))
 
-    # Opsi Kurs Beli / Kurs Jual
-    jenis_transaksi = st.selectbox(
-        "Jenis Transaksi",
-        ["Kurs Jual (Admin menjual valas)", "Kurs Beli (Admin membeli valas)"]
-    )
-
     if st.button("Konversi Sekarang"):
-
-        # hasil market (tanpa profit)
         market_result = convert_currency(jumlah, asal, tujuan, rates)
+        # ambil profit dari Gemini dibantu oleh GPT dan ASDOS
+        profit_rate = gemini_get_profit(rates, jumlah, asal, tujuan)
+        hasil_final = market_result * (1 - (profit_rate / 100))
 
-        # cari nilai rupiah awal
-        idr_awal = jumlah if asal == "IDR" else jumlah / rates[asal]
-
-        # cari nilai rupiah akhir
-        idr_akhir = hasil if tujuan == "IDR" else hasil / rates[tujuan]
-
-        selisih = idr_akhir - idr_awal
-
-        # ambil username dari session login
+        profit_value_usd = market_result * (profit_rate / 100)
+        profit_value_idr = profit_value_usd * rates["IDR"]
         admin = st.session_state.get("username", "Tidak diketahui")
         tanggal = datetime.now().strftime("%d-%m-%Y")
 
-        # ===============================
-        # FORMAT OUTPUT
-        # ===============================
         st.success(
         f"""
         **Nilai Uang Awal  :** {jumlah:,.2f} {asal}
@@ -147,15 +104,9 @@ if data:
 
         **Tanggal               :** {tanggal}
 
-        **Admin:** {admin}
+        **Admin                 :** {admin}
         """
         )
-
-
-    st.subheader("Analisis Profit Otomatis (Gemini)")
-
-    if st.button("Jalankan Analisis AI"):
-        st.info(gemini_profit_analysis(jumlah, rates))
 
 else:
     st.error("Tidak dapat memuat nilai tukar.")
