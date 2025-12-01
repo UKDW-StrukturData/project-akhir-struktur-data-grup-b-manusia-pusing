@@ -35,7 +35,7 @@ def page_dashboard():
     st.sidebar.title("NeuvaMoneda — Admin Panel")
     st.sidebar.write("Pilih menu aplikasi.")
 
-    st.title(f"Halo, {st.session_state.username} !!!!!")
+    st.title(f"Halo, {st.session_state.username} !)")
     st.success("Selamat datang di Dashboard NeuvaMoneda!")
 
     if st.sidebar.button("Logout"):

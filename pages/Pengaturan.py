@@ -1,5 +1,6 @@
 import streamlit as st
 
+# Fungsi GUARD dibantu untuk CHAT GPT
 def require_login():
     if "logged_in" not in st.session_state or st.session_state.logged_in is False:
         st.warning("Anda harus login untuk mengakses halaman ini.")

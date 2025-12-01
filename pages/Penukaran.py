@@ -3,8 +3,9 @@ import requests
 import json
 from datetime import datetime
 import google.generativeai as genai
+import os
 
-# LOGIN GUARD dibantu oleh GPT
+# Fungsi GUARD dibantu untuk CHAT GPT
 def require_login():
     if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
@@ -39,17 +40,15 @@ def fetch_exchange_rate():
     except Exception as err:
         st.error(f"Terjadi error saat mengambil data: {err}")
         return None
-
+    
 def convert_currency(amount, source, target, rates):
     if source == target:
         return amount
-
     usd_amount = amount / rates[source] if source != "USD" else amount
-
     return usd_amount * rates[target]
 
-# pembuatan fungsi profit dibantu oleh GPT & ASDOS
-GEMINI_API_KEY = "AIzaSyD-1_unReCLUvxQ9DM5of8-m-sygFRxsQI"
+# pembuatan fungsi gemini dibantu oleh CHAT GPT dan ASDOS
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
 
 def gemini_get_profit(rates, amount, source, target):
@@ -62,7 +61,6 @@ Dari mata uang: {source}
 Ke mata uang: {target}
 Rates lengkap: {json.dumps(rates)}
 """
-
     model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(prompt)
 
@@ -71,6 +69,23 @@ Rates lengkap: {json.dumps(rates)}
     except:
         return 2.0
 
+# Penyimpanan transaksi dibatu oleh CHAT GPT
+def save_transaction(data):
+    file_path = "transaction_history.json"
+
+    if not os.path.exists(file_path):
+        history = []
+    else:
+        with open(file_path, "r") as f:
+            try:
+                history = json.load(f)
+            except:
+                history = []
+
+    history.append(data)
+
+    with open(file_path, "w") as f:
+        json.dump(history, f, indent=4)
 
 data = fetch_exchange_rate()
 
@@ -85,12 +100,13 @@ if data:
 
     if st.button("Konversi Sekarang"):
         market_result = convert_currency(jumlah, asal, tujuan, rates)
-        # ambil profit dari Gemini dibantu oleh GPT dan ASDOS
         profit_rate = gemini_get_profit(rates, jumlah, asal, tujuan)
+
         hasil_final = market_result * (1 - (profit_rate / 100))
 
         profit_value_usd = market_result * (profit_rate / 100)
         profit_value_idr = profit_value_usd * rates["IDR"]
+
         admin = st.session_state.get("username", "Tidak diketahui")
         tanggal = datetime.now().strftime("%d-%m-%Y")
 
@@ -107,6 +123,20 @@ if data:
         **Admin                 :** {admin}
         """
         )
+
+        transaksi = {
+            "tanggal": tanggal,
+            "admin": admin,
+            "asal": asal,
+            "tujuan": tujuan,
+            "jumlah_awal": jumlah,
+            "hasil_akhir": hasil_final,
+            "profit_idr": profit_value_idr
+        }
+
+        save_transaction(transaksi)
+
+        st.info("Transaksi berhasil disimpan ke LogHistory ")
 
 else:
     st.error("Tidak dapat memuat nilai tukar.")
