@@ -41,11 +41,13 @@ def fetch_exchange_rate():
         st.error(f"Terjadi error saat mengambil data: {err}")
         return None
     
+
 def convert_currency(amount, source, target, rates):
     if source == target:
         return amount
     usd_amount = amount / rates[source] if source != "USD" else amount
     return usd_amount * rates[target]
+
 
 # pembuatan fungsi gemini dibantu oleh CHAT GPT dan ASDOS
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
@@ -69,7 +71,7 @@ Rates lengkap: {json.dumps(rates)}
     except:
         return 2.0
 
-# Penyimpanan transaksi dibatu oleh CHAT GPT
+# Penyimpanan transaksi dibantu oleh CHAT GPT
 def save_transaction(data):
     file_path = "transaction_history.json"
 
@@ -87,6 +89,7 @@ def save_transaction(data):
     with open(file_path, "w") as f:
         json.dump(history, f, indent=4)
 
+
 data = fetch_exchange_rate()
 
 if data:
@@ -99,6 +102,12 @@ if data:
     tujuan = st.selectbox("Mata uang tujuan:", sorted(rates.keys()))
 
     if st.button("Konversi Sekarang"):
+
+        if asal == tujuan:
+            st.error("Mata uang asal dan tujuan TIDAK BOLEH sama.")
+            st.stop() 
+
+
         market_result = convert_currency(jumlah, asal, tujuan, rates)
         profit_rate = gemini_get_profit(rates, jumlah, asal, tujuan)
 
