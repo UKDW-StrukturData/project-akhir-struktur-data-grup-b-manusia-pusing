@@ -25,5 +25,14 @@
         "jumlah_awal": 150000.0,
         "hasil_akhir": 11.494093864222934,
         "profit_idr": 3900.0000000000005
+    },
+    {
+        "tanggal": "02-12-2025",
+        "admin": "admin",
+        "asal": "USD",
+        "tujuan": "IDR",
+        "jumlah_awal": 100.0,
+        "hasil_akhir": 1629341.14,
+        "profit_idr": 552843096.7298
     }
 ]
