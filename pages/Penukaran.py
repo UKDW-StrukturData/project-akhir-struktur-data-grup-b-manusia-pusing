@@ -31,7 +31,7 @@ def fetch_exchange_rate():
             "date": raw.get("date"),
             "rates": raw.get("rates")
         }
-
+        # dibantu ASDOS
         with open("exchange_rate_data.json", "w") as outfile:
             json.dump(save_data, outfile, indent=4)
 
