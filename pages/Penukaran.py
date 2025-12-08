@@ -5,7 +5,7 @@ from datetime import datetime
 import google.generativeai as genai
 import os
 
-# Fungsi GUARD dibantu untuk CHAT GPT
+# pembuatan login guard oleh GPT
 def require_login():
     if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
@@ -23,6 +23,7 @@ def fetch_exchange_rate():
         if res.status_code != 200:
             st.error("Tidak dapat menghubungi API nilai tukar.")
             return None
+
         raw = res.json()
 
         save_data = {
@@ -31,7 +32,7 @@ def fetch_exchange_rate():
             "date": raw.get("date"),
             "rates": raw.get("rates")
         }
-        # dibantu ASDOS
+
         with open("exchange_rate_data.json", "w") as outfile:
             json.dump(save_data, outfile, indent=4)
 
@@ -40,7 +41,6 @@ def fetch_exchange_rate():
     except Exception as err:
         st.error(f"Terjadi error saat mengambil data: {err}")
         return None
-    
 
 def convert_currency(amount, source, target, rates):
     if source == target:
@@ -48,30 +48,33 @@ def convert_currency(amount, source, target, rates):
     usd_amount = amount / rates[source] if source != "USD" else amount
     return usd_amount * rates[target]
 
-
-# pembuatan fungsi gemini dibantu oleh CHAT GPT dan ASDOS
+# prompt pembuatan profit AI
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
 
 def gemini_get_profit(rates, amount, source, target):
     prompt = f"""
 Kamu adalah analis money changer profesional.
-Tentukan persentase profit TERBAIK untuk transaksi berikut:
-
-Jumlah: {amount}
-Dari mata uang: {source}
-Ke mata uang: {target}
-Rates lengkap: {json.dumps(rates)}
+Tentukan persentase profit yang wajar antara 0.1% sampai 5%.
+Cukup jawab dengan satu angka persen saja.
 """
+
     model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(prompt)
 
     try:
-        return float(response.text.strip())
+        profit = float(response.text.strip())
     except:
-        return 2.0
+        profit = 2.0
 
-# Penyimpanan transaksi dibantu oleh CHAT GPT
+    if profit < 0.1:
+        profit = 0.1
+    if profit > 5:
+        profit = 5
+
+    return profit
+
+# sistem penyimpanan transaksi dibantu oleh GPT dan ASDOS
 def save_transaction(data):
     file_path = "transaction_history.json"
 
@@ -90,6 +93,7 @@ def save_transaction(data):
         json.dump(history, f, indent=4)
 
 
+# penghitungan profit yang di lakukan oleh AI
 data = fetch_exchange_rate()
 
 if data:
@@ -105,15 +109,20 @@ if data:
 
         if asal == tujuan:
             st.error("Mata uang asal dan tujuan TIDAK BOLEH sama.")
-            st.stop() 
-
+            st.stop()
 
         market_result = convert_currency(jumlah, asal, tujuan, rates)
         profit_rate = gemini_get_profit(rates, jumlah, asal, tujuan)
-
         hasil_final = market_result * (1 - (profit_rate / 100))
 
-        profit_value_usd = market_result * (profit_rate / 100)
+        market_result_usd = (
+            market_result / rates[tujuan]
+            if tujuan != "USD"
+            else market_result
+        )
+        
+        profit_value_usd = market_result_usd * (profit_rate / 100)
+
         profit_value_idr = profit_value_usd * rates["IDR"]
 
         admin = st.session_state.get("username", "Tidak diketahui")
@@ -140,7 +149,8 @@ if data:
             "tujuan": tujuan,
             "jumlah_awal": jumlah,
             "hasil_akhir": hasil_final,
-            "profit_idr": profit_value_idr
+            "profit_idr": profit_value_idr,
+            "profit_rate_percent": profit_rate
         }
 
         save_transaction(transaksi)
