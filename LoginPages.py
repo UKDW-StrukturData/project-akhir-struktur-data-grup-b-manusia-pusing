@@ -1,9 +1,12 @@
 import streamlit as st
 
 def login_page():
-    # pembuatan markdown dibantu oleh GPT
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    st.markdown('<div class="logo-box">LOGO</div>', unsafe_allow_html=True)
+    # pembuatan markdown dibantu oleh GPT + ASDOS
+    a,b,c = st.columns(3)
+    
+    with b:
+        st.image("LogoNuevaMoneda.png", width=750 )
+        
     st.markdown('<div class="title">Selamat Datang Kembali!</div>', unsafe_allow_html=True)
 
     username = st.text_input("Username")
