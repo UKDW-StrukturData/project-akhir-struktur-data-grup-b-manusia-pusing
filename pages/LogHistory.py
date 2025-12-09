@@ -31,7 +31,7 @@ if os.path.exists(file_path):
             transaksi = json.load(f)
     except json.JSONDecodeError:
         transaksi = []
-        st.error("File JSON rusak atau sedang dipakai.")
+        st.error("File JSON rusak atau sedang diakses.")
 else:
     transaksi = []
 
@@ -48,41 +48,25 @@ if transaksi:
     )
     df = df.dropna(subset=["tanggal"])
 
-    df["bulan"] = df["tanggal"].dt.strftime("%Y-%m")
+    df = df.sort_values("tanggal").reset_index(drop=True)
 
-    bulan_terpilih = st.selectbox(
-        "📅 Pilih bulan transaksi:",
-        sorted(df["bulan"].unique()),
-        key="bulan_select"
-    )
+    st.write("### 📊 Grafik Profit per Transaksi")
 
-    df_bulan = df[df["bulan"] == bulan_terpilih]
-
-    st.write(f"### 📌 Transaksi Bulan {bulan_terpilih}")
-    st.dataframe(df_bulan, use_container_width=True)
-
-    st.write("### 📊 Grafik Total Profit per Bulan")
-
-    chart_placeholder = st.empty()  
-
-    total_profit = (
-        df.groupby("bulan", as_index=False)["profit_idr"]
-        .sum()
-        .sort_values("bulan")
-    )
+    chart_placeholder = st.empty()
 
     fig, ax = plt.subplots()
+
     ax.plot(
-        total_profit["bulan"],
-        total_profit["profit_idr"],
+        df["tanggal"],
+        df["profit_idr"],
         marker="o",
         linestyle="-",
         linewidth=2
     )
 
-    ax.set_xlabel("Bulan")
-    ax.set_ylabel("Total Profit (IDR)")
-    ax.set_title("Grafik Total Profit per Bulan")
+    ax.set_xlabel("Tanggal Transaksi")
+    ax.set_ylabel("Profit (IDR)")
+    ax.set_title("Grafik Profit per Transaksi")
     ax.grid(True)
     ax.tick_params(axis="x", rotation=45)
 
