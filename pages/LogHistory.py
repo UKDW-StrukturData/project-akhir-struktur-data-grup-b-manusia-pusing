@@ -11,7 +11,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.image("LogoNuevaMoneda.png", width=250)
 
-# LOGIN GUARD DIBANTU GPT DAN ASDOS
+# LOGIN GUARD DIBANTU ASDOS DAN GPT
 def require_login():
     if "logged_in" not in st.session_state or not st.session_state.logged_in:
         st.warning("Anda harus login untuk mengakses halaman ini.")
@@ -22,7 +22,7 @@ require_login()
 st.title("LogHistory Transaksi")
 st.write("Riwayat transaksi penukaran uang Anda.")
 
-# LOAD DATA JSON DIBANTU ASDOS
+# LOAD DATA JSON DIBANTU ASDOS DAN GPT
 file_path = "transaction_history.json"
 
 if os.path.exists(file_path):
@@ -31,7 +31,7 @@ if os.path.exists(file_path):
             transaksi = json.load(f)
     except json.JSONDecodeError:
         transaksi = []
-        st.error("File JSON rusak atau sedang diakses.")
+        st.error("File JSON rusak atau sedang dipakai.")
 else:
     transaksi = []
 
@@ -41,8 +41,11 @@ if transaksi:
     st.subheader("📄 Tabel Riwayat Transaksi")
     st.dataframe(df, use_container_width=True)
 
-    # ===== Parsing tanggal =====
-    df["tanggal"] = pd.to_datetime(df["tanggal"], format="%d-%m-%Y", errors="coerce")
+    df["tanggal"] = pd.to_datetime(
+        df["tanggal"],
+        format="%d-%m-%Y",
+        errors="coerce"
+    )
     df = df.dropna(subset=["tanggal"])
 
     df["bulan"] = df["tanggal"].dt.strftime("%Y-%m")
@@ -58,9 +61,9 @@ if transaksi:
     st.write(f"### 📌 Transaksi Bulan {bulan_terpilih}")
     st.dataframe(df_bulan, use_container_width=True)
 
-    st.write("Grafik Total Profit per Bulan")
+    st.write("### 📊 Grafik Total Profit per Bulan")
 
-    chart_placeholder = st.empty()  # ← KUNCI PENTING
+    chart_placeholder = st.empty()  
 
     total_profit = (
         df.groupby("bulan", as_index=False)["profit_idr"]
@@ -69,11 +72,19 @@ if transaksi:
     )
 
     fig, ax = plt.subplots()
-    ax.plot(total_profit["bulan"], total_profit["profit_idr"], marker="o")
+    ax.plot(
+        total_profit["bulan"],
+        total_profit["profit_idr"],
+        marker="o",
+        linestyle="-",
+        linewidth=2
+    )
+
     ax.set_xlabel("Bulan")
     ax.set_ylabel("Total Profit (IDR)")
     ax.set_title("Grafik Total Profit per Bulan")
     ax.grid(True)
+    ax.tick_params(axis="x", rotation=45)
 
     chart_placeholder.pyplot(fig)
 
