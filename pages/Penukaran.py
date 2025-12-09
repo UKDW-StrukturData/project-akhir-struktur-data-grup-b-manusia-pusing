@@ -54,7 +54,7 @@ def convert_currency(amount, source, target, rates):
     return usd_amount * rates[target]
 
 # prompt pembuatan profit AI
-GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+GEMINI_API_KEY = st.secrets["GEMINI_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
 
 def gemini_get_profit(rates, amount, source, target):
