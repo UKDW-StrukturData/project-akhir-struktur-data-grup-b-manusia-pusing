@@ -5,7 +5,7 @@ import json
 import os
 from streamlit_autorefresh import st_autorefresh
 
-st_autorefresh(interval=3000, key="auto_refresh")
+st_autorefresh(interval=10000, key="auto_refresh")
 col1, col2, col3 = st.columns(3)
 with col1:
     st.image("LogoNuevaMoneda.png", width=250)
