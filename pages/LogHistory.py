@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import json
 import os
 
+a,b,c = st.columns(3)
+    
+with a:
+    st.image("LogoNuevaMoneda.png", width=750 )
+    
 # Fungsi GUARD dibantu untuk CHAT GPT
 def require_login():
     if "logged_in" not in st.session_state or st.session_state.logged_in is False:

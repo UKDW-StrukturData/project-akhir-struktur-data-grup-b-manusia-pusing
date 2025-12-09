@@ -3,6 +3,11 @@ import pandas as pd
 import json
 import os
 
+a,b,c = st.columns(3)
+    
+with a:
+    st.image("LogoNuevaMoneda.png", width=750 )
+        
 # LOGIN GUARD
 def require_login():
     if not st.session_state.get("logged_in", False):
@@ -13,8 +18,6 @@ require_login()
 username = st.session_state.get("username", "User")
 
 st.title(f"Selamat datang {username} di Halaman Home!")
-st.write("proses pengembangan")
-
 
 # LOAD DATA JSON DARI FOLDER UTAMA
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -48,4 +51,4 @@ df = pd.DataFrame(combined).sort_values(by="Nilai (per USD)", ascending=False)
 
 # SHOW TABLE
 st.dataframe(df, height=600, width=700)
-st.write("Mata Uang dengan Nilai Tertinggi")
+st.subheader("Mata Uang dengan Nilai Tertinggi")

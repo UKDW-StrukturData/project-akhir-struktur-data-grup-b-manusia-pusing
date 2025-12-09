@@ -5,6 +5,11 @@ from datetime import datetime
 import google.generativeai as genai
 import os
 
+a,b,c = st.columns(3)
+    
+with a:
+    st.image("LogoNuevaMoneda.png", width=750 )
+    
 # pembuatan login guard oleh GPT
 def require_login():
     if not st.session_state.get("logged_in", False):
