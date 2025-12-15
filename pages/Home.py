@@ -9,7 +9,7 @@ with a:
     st.image("LogoNuevaMoneda.png", width=750 )
         
 # LOGIN GUARD
-def require_login():
+def require_login():    
     if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
         st.switch_page("LoginPages.py")
