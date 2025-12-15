@@ -1,45 +1,54 @@
 import streamlit as st
 import os
+from LoginPages import login_page
+from SignUpPages import signup_page
 
-st.set_page_config(
-    page_title="NeuvaMoneda",
-    layout="wide"
-)
+st.set_page_config(page_title="NeuvaMoneda", layout="wide")
 
+# Mengeksekusi file css dengan batuuan CHAT GPT
 def load_css():
     css_file = "styles.css"
     if os.path.exists(css_file):
         with open(css_file) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
 load_css()
 
-left, center, right = st.columns([1, 2, 1])
+if "page" not in st.session_state:
+    st.session_state.page = "signup"
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+if "CREDENTIALS" not in st.session_state:
+    st.session_state.CREDENTIALS = {}
 
-with center:
-    st.image("LogoNuevaMoneda.png", width=400)
-    st.markdown("""
-    <p style="
-        text-align:center;
-        font-size:20px;
-        font-style:italic;
-        color:#dddddd;
-        margin-top:15px;
-    ">
-        “Money is a tool. Used properly it makes something beautiful,  
-        used wrong it makes a mess.”
-    </p>
-    """, unsafe_allow_html=True)
+# Fungsi GUARD dibantu untuk CHAT GPT
+def login_guard():
+    if not st.session_state.logged_in:
+        st.warning("Silakan login terlebih dahulu.")
+        st.session_state.page = "login"
+        st.rerun()
 
-    st.write("")
+def page_dashboard():
+    login_guard()
 
-    # BUTTONS
-    col1, col2 = st.columns(2)
+    st.sidebar.title("NeuvaMoneda — Admin Panel")
+    st.sidebar.write("Pilih menu aplikasi.")
 
-    with col1:
-        if st.button("Login", use_container_width=True):
-            st.switch_page("pages/LoginPages.py")
+    st.title(f"Halo, {st.session_state.username} !)")
+    st.success("Selamat datang di Dashboard NeuvaMoneda!")
 
-    with col2:
-        if st.button("Sign Up", use_container_width=True):
-            st.switch_page("pages/SignUpPages.py")
+    if st.sidebar.button("Logout"):
+        st.session_state.logged_in = False
+        st.session_state.page = "login"
+        st.rerun()
+
+if not st.session_state.logged_in and st.session_state.page not in ["login", "signup"]:
+    st.session_state.page = "signup"
+
+if st.session_state.page == "login":
+    login_page()
+elif st.session_state.page == "signup":
+    signup_page()
+else:
+    page_dashboard()
