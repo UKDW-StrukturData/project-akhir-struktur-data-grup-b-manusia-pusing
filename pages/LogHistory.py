@@ -5,6 +5,7 @@ import json
 import os
 from streamlit_autorefresh import st_autorefresh
 
+# CSS KUSTOM FUTURISTIK
 st.markdown("""
     <style>
         .stApp {
@@ -46,7 +47,7 @@ def require_login():
 require_login()
 
 st.title("LogHistory Transaksi")
-st.write("Riwayat transaksi penukaran uang Anda (Data Realtime/Otomatis Refresh).")
+st.write("Riwayat transaksi penukaran uang Anda.")
 
 # LOAD DATA JSON DIBANTU ASDOS
 file_path = "transaction_history.json"
@@ -57,7 +58,7 @@ if os.path.exists(file_path):
             transaksi = json.load(f)
     except json.JSONDecodeError:
         transaksi = []
-        st.warning("File riwayat transaksi sedang diakses atau rusak. Menampilkan data kosong.")
+        st.error("File JSON rusak atau sedang diakses.")
 else:
     transaksi = []
 
@@ -74,50 +75,33 @@ if transaksi:
     df["tahun"] = df["tanggal"].dt.year
     df["bulan"] = df["tanggal"].dt.strftime("%Y-%m")
 
-    st.subheader("📄 Filter Riwayat Transaksi")
+    st.subheader("📄 Tabel Transaksi 1 Tahun")
 
-    col_tahun, col_bulan = st.columns(2)
-    
-    with col_tahun:
-        tahun_terpilih = st.selectbox(
-            "Pilih Tahun:",
-            sorted(df["tahun"].unique()),
-            key="tahun_select"
-        )
-    
-    df_tahun = df[df["tahun"] == tahun_terpilih]
-
-    with col_bulan:
-        bulan_terpilih = st.selectbox(
-            "Pilih Bulan:",
-            sorted(df_tahun["bulan"].unique()),
-            key="bulan_select"
-        )
-
-    df_bulan = df_tahun[df_tahun["bulan"] == bulan_terpilih]
-
-    st.markdown(f"### 📑 Data Transaksi Bulan {bulan_terpilih}")
-    
-    st.dataframe(
-        df_bulan[[
-            "tanggal", "admin", "asal", "tujuan", 
-            "jumlah_awal", "hasil_akhir", "profit_idr", "profit_rate_percent"
-        ]], 
-        use_container_width=True,
-        column_config={
-            "jumlah_awal": st.column_config.NumberColumn("Jumlah Awal", format="%.2f"),
-            "hasil_akhir": st.column_config.NumberColumn("Hasil Akhir", format="%.2f"),
-            "profit_idr": st.column_config.NumberColumn("Profit (IDR)", format="Rp %d"),
-            "profit_rate_percent": st.column_config.NumberColumn("Profit Rate (%)", format="%.1f %%"),
-        }
+    tahun_terpilih = st.selectbox(
+        "Pilih Tahun:",
+        sorted(df["tahun"].unique())
     )
 
+    df_tahun = df[df["tahun"] == tahun_terpilih]
+    st.dataframe(df_tahun, use_container_width=True)
+
+    st.subheader("📄 Tabel Transaksi Per Bulan")
+
+    bulan_terpilih = st.selectbox(
+        "Pilih Bulan:",
+        sorted(df_tahun["bulan"].unique()),
+        key="bulan_select"
+    )
+
+    df_bulan = df_tahun[df_tahun["bulan"] == bulan_terpilih]
+    st.dataframe(df_bulan, use_container_width=True)
+
     # menampilkan grafik transaski dibantu oleh GPT
-    st.subheader("📈 Analisis Profit (Bulanan)")
+    st.subheader("📈 Grafik Profit per Transaksi (Bulanan)")
 
     chart_placeholder = st.empty()
 
-    # Setup figure matplotlib dengan tema gelap dibantu GPT dan Asdos
+    # Matplotlib disesuaikan agar sesuai dengan tema gelap futuristik
     fig, ax = plt.subplots(facecolor="#0f1c2c") 
 
     ax.plot(
@@ -126,20 +110,21 @@ if transaksi:
         marker="o",
         linestyle="-",
         linewidth=2,
-        color="#00bcd4" 
+        color="#00bcd4" # Warna garis neon
     )
 
+    # Styling futuristik
     ax.set_xlabel("Urutan Transaksi", color="#e0f7fa")
     ax.set_ylabel("Profit (IDR)", color="#e0f7fa")
-    ax.set_title(f"Proyeksi Profit Transaksi Bulan {bulan_terpilih}", color="#00bcd4")
+    ax.set_title(f"Grafik Profit Transaksi Bulan {bulan_terpilih}", color="#00bcd4")
     ax.tick_params(axis='x', colors='#e0f7fa')
     ax.tick_params(axis='y', colors='#e0f7fa')
     ax.spines['bottom'].set_color('#00bcd4')
     ax.spines['left'].set_color('#00bcd4')
     ax.grid(axis='y', linestyle='--', alpha=0.5, color="#1a3a50")
-    ax.set_facecolor("#1e2a38") 
+    ax.set_facecolor("#1e2a38") # Latar belakang area plot
 
     chart_placeholder.pyplot(fig)
 
 else:
-    st.warning("Belum ada transaksi yang tersimpan. Silakan lakukan penukaran di menu 'Fitur Penukaran Mata Uang'.")
+    st.warning("Belum ada transaksi yang tersimpan.")
