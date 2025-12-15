@@ -3,11 +3,11 @@ import pandas as pd
 import json
 import os
 
-a,b,c = st.columns(3)
-    
+a, b, c = st.columns(3)
+
 with a:
-    st.image("LogoNuevaMoneda.png", width=750 )
-        
+    st.image("LogoNuevaMoneda.png", width=750)
+
 # LOGIN GUARD
 def require_login():
     if not st.session_state.get("logged_in", False):
@@ -18,6 +18,21 @@ require_login()
 username = st.session_state.get("username", "User")
 
 st.title(f"Selamat datang {username} di Halaman Home!")
+
+def country_flag(country_code):
+    try:
+        return ''.join(chr(127397 + ord(c)) for c in country_code.upper())
+    except:
+        return "🏳️"
+
+currency_country = {
+    "USD": "US", "IDR": "ID", "EUR": "EU", "JPY": "JP", "GBP": "GB",
+    "AUD": "AU", "CAD": "CA", "CHF": "CH", "CNY": "CN", "HKD": "HK",
+    "SGD": "SG", "MYR": "MY", "THB": "TH", "VND": "VN", "KRW": "KR",
+    "INR": "IN", "SAR": "SA", "AED": "AE", "QAR": "QA",
+    "EGP": "EG", "ZAR": "ZA", "NGN": "NG", "PKR": "PK",
+    "BDT": "BD", "LKR": "LK", "NPR": "NP", "NZD": "NZ"
+}
 
 # LOAD DATA JSON DARI FOLDER UTAMA
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -33,22 +48,21 @@ with open(name_path, "r", encoding="utf-8") as f:
 
 rates = data["rates"]
 
-
-# GABUNGKAN: KODE + NAMA MATA UANG + NILAI
+# Menggabungkan exchange_rate dan nama negara beserta bendera
 combined = []
 
 for code, value in rates.items():
     full_name = currency_names.get(code, "Unknown Currency")
+    country_code = currency_country.get(code, "")
+    flag = country_flag(country_code) if country_code else "🏳️"
+
     combined.append({
         "Kode": code,
-        "Mata Uang": f"{code} - {full_name}",
+        "Mata Uang": f"{flag} {code} - {full_name}",
         "Nilai (per USD)": value
     })
 
-# SORTING
 df = pd.DataFrame(combined).sort_values(by="Nilai (per USD)", ascending=False)
 
-
-# SHOW TABLE
 st.dataframe(df, height=600, width=700)
 st.subheader("Mata Uang dengan Nilai Tertinggi")
