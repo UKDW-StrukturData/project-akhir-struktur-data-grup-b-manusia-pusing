@@ -59,8 +59,8 @@ def login_page():
     with st.container():
         st.markdown('<div class="login-card">', unsafe_allow_html=True)
 
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", key="login_username")
+        password = st.text_input("Password", type="password", key="login_password")
 
         if st.button("Masuk", key="login_btn"):
             if (
@@ -79,6 +79,7 @@ def login_page():
 
         st.markdown("</div>", unsafe_allow_html=True)
 
+# Inisialisasi state
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {"admin": "admin"}
 

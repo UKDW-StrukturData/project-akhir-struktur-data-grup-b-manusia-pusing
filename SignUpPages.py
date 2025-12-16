@@ -59,9 +59,9 @@ def signup_page():
     with st.container():
         st.markdown('<div class="signup-card">', unsafe_allow_html=True)
 
-        new_user = st.text_input("Username")
-        new_pass = st.text_input("Password", type="password")
-        confirm = st.text_input("Konfirmasi Password", type="password")
+        new_user = st.text_input("Username", key="signup_username")
+        new_pass = st.text_input("Password", type="password", key="signup_password")
+        confirm = st.text_input("Konfirmasi Password", type="password", key="signup_confirm")
 
         if st.button("Daftar", key="signup_action"):
             if new_user == "" or new_pass == "":
