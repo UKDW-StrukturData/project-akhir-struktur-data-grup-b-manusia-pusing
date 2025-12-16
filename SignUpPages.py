@@ -44,6 +44,11 @@ def signup_page():
 
     st.markdown('<div class="title">Silahkan Membuat Akun Baru</div>', unsafe_allow_html=True)
 
+    if st.session_state.get("signup_success"):
+        st.success("🎉 Akun berhasil dibuat! Silakan login.")
+        st.toast("Akun berhasil dibuat", icon="✅")
+        st.session_state.redirect_counter = 1
+
     new_user = st.text_input("Username", key="signup_username")
     new_pass = st.text_input("Password", type="password", key="signup_password")
     confirm  = st.text_input("Konfirmasi Password", type="password", key="signup_confirm")
@@ -52,20 +57,25 @@ def signup_page():
         if not new_user or not new_pass or not confirm:
             st.error("Semua kolom wajib diisi.")
         elif new_user in st.session_state.CREDENTIALS:
-            st.warning("Username sudah digunakan. Silakan gunakan username lain.")
+            st.warning("Username sudah digunakan.")
         elif new_pass != confirm:
             st.error("Password tidak cocok.")
         else:
             st.session_state.CREDENTIALS[new_user] = new_pass
-            st.toast("🎉 Akun berhasil dibuat! Silakan login.", icon="✅")
-            st.session_state.page = "login"
+            st.session_state.signup_success = True
             st.rerun()
 
-    if st.button("Kembali ke Login", key="back_to_login"):
+    if st.session_state.get("redirect_counter") == 1:
+        st.session_state.redirect_counter = 0
+        st.session_state.page = "login"
+        st.rerun()
+
+    if st.button("Kembali ke Login"):
         st.session_state.page = "login"
         st.rerun()
 
 if "CREDENTIALS" not in st.session_state:
-    st.session_state.CREDENTIALS = {
-        "admin": "admin"
-    }
+    st.session_state.CREDENTIALS = {"admin": "admin"}
+
+if "signup_success" not in st.session_state:
+    st.session_state.signup_success = False
