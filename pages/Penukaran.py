@@ -153,12 +153,17 @@ if st.button("Konversi"):
     trx_id = save_transaction(transaksi)
 
     st.success(
-        f"""
+    f"""
 Transaksi berhasil disimpan ✅
 
 ID Transaksi        : `{trx_id}`  
-Mata Uang Asal      : `{asal}` ({currency_names.get(asal)})  
-Mata Uang Tujuan    : `{tujuan}` ({currency_names.get(tujuan)})  
-Profit              : `Rp {profit_idr:,.2f}`
+
+Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({currency_names.get(asal)})  
+
+Mata Uang Tujuan    : H`{hasil:,.2f} {tujuan}` ({currency_names.get(tujuan)})  
+
+Profit              : `Rp {profit_idr:,.2f}`  
+
+Admin               : `{admin}`
 """
-    )
+)
