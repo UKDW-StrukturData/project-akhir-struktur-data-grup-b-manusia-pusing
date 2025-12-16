@@ -42,7 +42,7 @@ require_login_page()
 st.title("Fitur Penukaran Mata Uang")
 
 # =================================================
-# 🔴 PATH KE FOLDER UTAMA (INI KUNCI PERBAIKAN)
+# 📌 PATH KE FOLDER UTAMA PROJECT (FINAL & BENAR)
 # =================================================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -50,6 +50,13 @@ TRANSACTION_FILE = os.path.join(BASE_DIR, "transaction_history.json")
 CURRENCY_FILE = os.path.join(BASE_DIR, "currency_names.json")
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
+
+# =================================================
+# 📌 PASTIKAN FILE TRANSAKSI ADA (AUTO CREATE)
+# =================================================
+if not os.path.exists(TRANSACTION_FILE):
+    with open(TRANSACTION_FILE, "w", encoding="utf-8") as f:
+        json.dump({}, f)
 
 # ================== LOAD CURRENCY NAMES (HASH TABLE) ==================
 if os.path.exists(CURRENCY_FILE):
@@ -60,6 +67,7 @@ else:
     currency_names = {}
 
 def format_currency(code):
+    # fallback aman jika tidak ditemukan
     return f"{code} - {currency_names.get(code, code)}"
 
 # ================== EXCHANGE RATE ==================
@@ -86,7 +94,7 @@ except:
     pass
 
 def gemini_get_profit():
-    return 2.0  # persen
+    return 2.0  # persen tetap
 
 # ================== HASH TABLE TRANSACTION ==================
 def generate_transaction_id():
@@ -95,19 +103,11 @@ def generate_transaction_id():
     return f"TRX-{timestamp}-{rand}"
 
 def save_transaction(data):
-    if os.path.exists(TRANSACTION_FILE):
-        with open(TRANSACTION_FILE, "r", encoding="utf-8") as f:
-            try:
-                history = json.load(f)
-                if not isinstance(history, dict):
-                    history = {}
-            except:
-                history = {}
-    else:
-        history = {}
+    with open(TRANSACTION_FILE, "r", encoding="utf-8") as f:
+        history = json.load(f)
 
     trx_id = generate_transaction_id()
-    history[trx_id] = data  # HASH TABLE (KEY: trx_id)
+    history[trx_id] = data  # HASH TABLE (KEY = trx_id)
 
     with open(TRANSACTION_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=4, ensure_ascii=False)
@@ -164,9 +164,9 @@ Transaksi berhasil disimpan ✅
 
 ID Transaksi        : `{trx_id}`  
 
-Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({currency_names.get(asal)})  
+Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({currency_names.get(asal, asal)})  
 
-Mata Uang Tujuan    : `{hasil:,.2f} {tujuan}` ({currency_names.get(tujuan)})  
+Mata Uang Tujuan    : `{hasil:,.2f} {tujuan}` ({currency_names.get(tujuan, tujuan)})  
 
 Profit              : `Rp {profit_idr:,.2f}`  
 
