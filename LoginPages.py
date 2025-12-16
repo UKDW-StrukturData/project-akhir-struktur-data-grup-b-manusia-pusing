@@ -64,6 +64,5 @@ def login_page():
         st.session_state.page = "signup"
         st.rerun()
 
-# Inisialisasi state (AMAN)
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {"admin": "admin"}

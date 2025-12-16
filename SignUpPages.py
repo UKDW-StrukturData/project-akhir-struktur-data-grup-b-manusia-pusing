@@ -49,15 +49,21 @@ def signup_page():
     confirm = st.text_input("Konfirmasi Password", type="password", key="signup_confirm")
 
     if st.button("Daftar", key="signup_action"):
-        if new_user == "" or new_pass == "":
+        if not new_user or not new_pass or not confirm:
             st.error("Semua kolom wajib diisi.")
         elif new_user in st.session_state.CREDENTIALS:
-            st.error("Username sudah digunakan.")
+            st.warning("Username sudah digunakan. Silakan gunakan username lain.")
         elif new_pass != confirm:
             st.error("Password tidak cocok.")
         else:
             st.session_state.CREDENTIALS[new_user] = new_pass
+
             st.success("Akun berhasil dibuat! Silakan login.")
+
+            st.session_state.signup_username = ""
+            st.session_state.signup_password = ""
+            st.session_state.signup_confirm = ""
+
             st.session_state.page = "login"
             st.rerun()
 
@@ -65,6 +71,5 @@ def signup_page():
         st.session_state.page = "login"
         st.rerun()
 
-# Inisialisasi state (AMAN)
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {"admin": "admin"}
