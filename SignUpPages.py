@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 def signup_page():
     st.markdown("""
@@ -56,7 +57,9 @@ def signup_page():
             st.warning("⚠️ Password dan konfirmasi tidak sama.")
         else:
             st.session_state.CREDENTIALS[username] = password
-            st.success("✅ Akun berhasil dibuat! Silakan login.")
+            st.success("✅ Akun berhasil dibuat! Mengalihkan ke halaman login...")
+            time.sleep(1.5)
+            st.session_state.page = "login"
 
     if st.button("Kembali ke Login"):
         st.session_state.page = "login"
