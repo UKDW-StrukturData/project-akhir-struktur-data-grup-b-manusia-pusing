@@ -49,3 +49,11 @@ def validate_user(username, password):
     result = cur.fetchone()
     conn.close()
     return result is not None
+
+def delete_user(username):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM users WHERE username = ?", (username,))
+    conn.commit()
+    conn.close()
+
