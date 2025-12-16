@@ -6,7 +6,6 @@ import os
 import uuid
 import google.generativeai as genai
 
-# ================== STYLE ==================
 st.markdown("""
 <style>
 .stApp {
@@ -26,12 +25,10 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# ================== LOGO ==================
 a, b, c = st.columns(3)
 with a:
     st.image("LogoNuevaMoneda.png", width=750)
 
-# ================== LOGIN GUARD ==================
 def require_login_page():
     if not st.session_state.get("logged_in"):
         st.warning("Silakan login terlebih dahulu.")
@@ -40,10 +37,6 @@ def require_login_page():
 require_login_page()
 
 st.title("Fitur Penukaran Mata Uang")
-
-# =================================================
-# 📌 PATH KE FOLDER UTAMA PROJECT (FINAL & BENAR)
-# =================================================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TRANSACTION_FILE = os.path.join(BASE_DIR, "transaction_history.json")
@@ -51,14 +44,10 @@ CURRENCY_FILE = os.path.join(BASE_DIR, "currency_names.json")
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
-# =================================================
-# 📌 PASTIKAN FILE TRANSAKSI ADA (AUTO CREATE)
-# =================================================
 if not os.path.exists(TRANSACTION_FILE):
     with open(TRANSACTION_FILE, "w", encoding="utf-8") as f:
         json.dump({}, f)
 
-# ================== LOAD CURRENCY NAMES (HASH TABLE) ==================
 if os.path.exists(CURRENCY_FILE):
     with open(CURRENCY_FILE, "r", encoding="utf-8") as f:
         currency_names = json.load(f)
@@ -67,10 +56,8 @@ else:
     currency_names = {}
 
 def format_currency(code):
-    # fallback aman jika tidak ditemukan
     return f"{code} - {currency_names.get(code, code)}"
 
-# ================== EXCHANGE RATE ==================
 def fetch_exchange_rate():
     try:
         res = requests.get(API_URL, timeout=5)
@@ -87,7 +74,6 @@ def convert_currency(amount, source, target, rates):
     usd = amount / rates[source] if source != "USD" else amount
     return usd * rates[target]
 
-# ================== GEMINI (DUMMY PROFIT) ==================
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 except:
@@ -96,7 +82,7 @@ except:
 def gemini_get_profit():
     return 2.0  # persen tetap
 
-# ================== HASH TABLE TRANSACTION ==================
+# Hash Table dengan Arahan dari GPT
 def generate_transaction_id():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     rand = uuid.uuid4().hex[:6].upper()
@@ -107,14 +93,13 @@ def save_transaction(data):
         history = json.load(f)
 
     trx_id = generate_transaction_id()
-    history[trx_id] = data  # HASH TABLE (KEY = trx_id)
+    history[trx_id] = data 
 
     with open(TRANSACTION_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=4, ensure_ascii=False)
 
     return trx_id
 
-# ================== UI ==================
 rates = fetch_exchange_rate()
 
 jumlah = st.number_input("Nominal:", min_value=1.0)
@@ -131,7 +116,6 @@ tujuan = st.selectbox(
     format_func=format_currency
 )
 
-# ================== ACTION ==================
 if st.button("Konversi"):
     if asal == tujuan:
         st.error("Mata uang asal dan tujuan tidak boleh sama")

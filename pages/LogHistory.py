@@ -5,7 +5,6 @@ import json
 import os
 from streamlit_autorefresh import st_autorefresh
 
-# ================== STYLE ==================
 st.markdown("""
 <style>
 .stApp {
@@ -20,7 +19,6 @@ h1 {
 
 st_autorefresh(interval=10000, key="refresh")
 
-# ================== LOGIN GUARD ==================
 def require_login_page():
     if not st.session_state.get("logged_in"):
         st.switch_page("LoginPages.py")
@@ -29,7 +27,7 @@ require_login_page()
 
 st.title("Log History Transaksi")
 
-# ================== PATH KE FOLDER UTAMA ==================
+# Path Folder dibantu GPT
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 file_path = os.path.join(BASE_DIR, "transaction_history.json")
 
@@ -44,7 +42,7 @@ if not transaksi:
     st.info("Belum ada transaksi.")
     st.stop()
 
-# ================== HASH TABLE → DATAFRAME ==================
+# Hash Table ke DataFrame dibantu GPT
 rows = []
 for trx_id, trx_data in transaksi.items():
     item = trx_data.copy()
@@ -53,23 +51,19 @@ for trx_id, trx_data in transaksi.items():
 
 df = pd.DataFrame(rows)
 
-# ================== VALIDASI KOLOM ==================
 required_cols = {"tanggal", "profit_idr"}
 if not required_cols.issubset(df.columns):
     st.error("Format data transaksi tidak valid")
     st.stop()
 
-# ================== PARSING TANGGAL (FIX ERROR) ==================
 df["tanggal"] = pd.to_datetime(
     df["tanggal"],
     format="%d-%m-%Y %H:%M",
     errors="coerce"
 )
 
-# Buang baris yang gagal parsing
 df = df.dropna(subset=["tanggal"])
 
-# ================== FILTER ==================
 df["tahun"] = df["tanggal"].dt.year
 df["bulan"] = df["tanggal"].dt.strftime("%Y-%m")
 
@@ -79,13 +73,11 @@ df_tahun = df[df["tahun"] == tahun]
 bulan = st.selectbox("Pilih Bulan", sorted(df_tahun["bulan"].unique()))
 df_bulan = df_tahun[df_tahun["bulan"] == bulan]
 
-# ================== TABEL ==================
 st.dataframe(
     df_bulan.sort_values("tanggal", ascending=False),
     use_container_width=True
 )
 
-# ================== GRAFIK ==================
 if not df_bulan.empty:
     fig, ax = plt.subplots()
     ax.plot(df_bulan["tanggal"], df_bulan["profit_idr"], marker="o")

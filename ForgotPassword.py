@@ -33,18 +33,18 @@ def forgot_password_page():
 
     if st.button("Reset Password"):
         if not username or not new_password:
-            st.error("❌ Semua field wajib diisi")
+            st.error("Semua field wajib diisi")
         elif new_password != confirm_password:
-            st.error("❌ Password tidak sama")
+            st.error("Password tidak sama")
         elif len(new_password) < 4:
-            st.error("❌ Password minimal 4 karakter")
+            st.error("Password minimal 4 karakter")
         else:
             if update_password(username, new_password):
-                st.success("✅ Password berhasil direset")
+                st.success("Password berhasil direset")
                 st.session_state.page = "login"
                 st.rerun()
             else:
-                st.error("❌ Username tidak ditemukan")
+                st.error("Username tidak ditemukan")
 
     if st.button("Kembali ke Login"):
         st.session_state.page = "login"

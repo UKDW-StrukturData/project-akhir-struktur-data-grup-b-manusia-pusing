@@ -35,24 +35,24 @@ def signup_page():
 
     if st.button("Daftar"):
         if not username or not password or not confirm:
-            st.warning("⚠️ Semua kolom wajib diisi.")
+            st.warning("Semua kolom wajib diisi.")
             return
 
         if password != confirm:
-            st.warning("⚠️ Password dan konfirmasi tidak sama.")
+            st.warning("Password dan konfirmasi tidak sama.")
             return
 
         if user_exists(username):
-            st.warning("⚠️ Username sudah digunakan.")
+            st.warning("Username sudah digunakan.")
             return
 
         if add_user(username, password):
-            st.success("✅ Akun berhasil dibuat!")
+            st.success("Akun berhasil dibuat!")
             time.sleep(1.5)
             st.session_state.page = "login"
             st.rerun()
         else:
-            st.error("❌ Gagal membuat akun.")
+            st.error("Gagal membuat akun.")
 
     if st.button("Kembali ke Login"):
         st.session_state.page = "login"
