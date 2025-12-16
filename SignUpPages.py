@@ -44,6 +44,11 @@ def signup_page():
 
     st.markdown('<div class="title">Silahkan Membuat Akun Baru</div>', unsafe_allow_html=True)
 
+    # 🔔 tampilkan notifikasi JIKA ADA
+    if st.session_state.get("signup_success"):
+        st.success("Akun berhasil dibuat! Silakan login.")
+        del st.session_state.signup_success
+
     new_user = st.text_input("Username", key="signup_username")
     new_pass = st.text_input("Password", type="password", key="signup_password")
     confirm = st.text_input("Konfirmasi Password", type="password", key="signup_confirm")
@@ -57,7 +62,7 @@ def signup_page():
             st.error("Password tidak cocok.")
         else:
             st.session_state.CREDENTIALS[new_user] = new_pass
-            st.success("Akun berhasil dibuat! Silakan login.")
+            st.session_state.signup_success = True
             st.session_state.page = "login"
             st.rerun()
 
