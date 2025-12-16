@@ -29,6 +29,7 @@ a, b, c = st.columns(3)
 with a:
     st.image("LogoNuevaMoneda.png", width=750)
 
+# LOGIN GUARD
 def require_login_page():
     if not st.session_state.get("logged_in"):
         st.warning("Silakan login terlebih dahulu.")
@@ -39,6 +40,22 @@ require_login_page()
 st.title("Fitur Penukaran Mata Uang")
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
+
+currency_file = "currency_names.json"
+
+if os.path.exists(currency_file):
+    with open(currency_file, "r", encoding="utf-8") as f:
+        currency_names = json.load(f)
+else:
+    currency_names = {
+        "USD": "United States Dollar",
+        "IDR": "Indonesian Rupiah",
+        "EUR": "Euro",
+        "JPY": "Japanese Yen"
+    }
+
+def format_currency(code):
+    return f"{code} - {currency_names.get(code, 'Unknown')}"
 
 def fetch_exchange_rate():
     try:
@@ -64,7 +81,6 @@ genai.configure(api_key=GEMINI_API_KEY)
 def gemini_get_profit():
     return 2.0  
 
-# Penyimpanan Hash Table dibantu arahan GPT dan asdos
 def generate_transaction_id():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     rand = uuid.uuid4().hex[:6].upper()
@@ -96,8 +112,18 @@ data = fetch_exchange_rate()
 rates = data["rates"]
 
 jumlah = st.number_input("Nominal:", min_value=1.0)
-asal = st.selectbox("Mata Uang Asal:", rates.keys())
-tujuan = st.selectbox("Mata Uang Tujuan:", rates.keys())
+
+asal = st.selectbox(
+    "Mata Uang Asal:",
+    sorted(rates.keys()),
+    format_func=format_currency
+)
+
+tujuan = st.selectbox(
+    "Mata Uang Tujuan:",
+    sorted(rates.keys()),
+    format_func=format_currency
+)
 
 if st.button("Konversi"):
     if asal == tujuan:
@@ -126,4 +152,13 @@ if st.button("Konversi"):
 
     trx_id = save_transaction(transaksi)
 
-    st.success(f"Transaksi berhasil disimpan\nID: {trx_id}")
+    st.success(
+        f"""
+Transaksi berhasil disimpan ✅
+
+ID Transaksi        : `{trx_id}`  
+Mata Uang Asal      : `{asal}` ({currency_names.get(asal)})  
+Mata Uang Tujuan    : `{tujuan}` ({currency_names.get(tujuan)})  
+Profit              : `Rp {profit_idr:,.2f}`
+"""
+    )
