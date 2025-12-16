@@ -57,13 +57,7 @@ def signup_page():
             st.error("Password tidak cocok.")
         else:
             st.session_state.CREDENTIALS[new_user] = new_pass
-
             st.success("Akun berhasil dibuat! Silakan login.")
-
-            st.session_state.signup_username = ""
-            st.session_state.signup_password = ""
-            st.session_state.signup_confirm = ""
-
             st.session_state.page = "login"
             st.rerun()
 
