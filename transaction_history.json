@@ -1,0 +1,12 @@
+{
+    "TRX-20251216212848-7489C8": {
+        "tanggal": "16-12-2025 21:28",
+        "admin": "admin",
+        "asal": "AED",
+        "tujuan": "IDR",
+        "jumlah_awal": 100.0,
+        "hasil_akhir": 444745.3623978201,
+        "profit_idr": 9076.43596730245,
+        "profit_rate_percent": 2.0
+    }
+}
