@@ -209,15 +209,15 @@ if data and "rates" in data:
         # Menggunakan format kustom untuk hasil yang lebih futuristik
         st.success(
             f"""
-**Nilai Uang Awal  ** : `{jumlah:,.2f} {asal}` ({currency_names.get(asal, 'Unknown')})
+Nilai Uang Awal     : `{jumlah:,.2f} {asal}` ({currency_names.get(asal, 'Unknown')})
 
-**Hasil Konversi     ** : `{hasil_final:,.2f} {tujuan}` ({currency_names.get(tujuan, 'Unknown')})
+Hasil Konversi      : `{hasil_final:,.2f} {tujuan}` ({currency_names.get(tujuan, 'Unknown')})
 
-**Profit Penukaran ** : `Rp {profit_value_idr:,.2f}`
+Profit Penukaran    : `Rp {profit_value_idr:,.2f}`
 
-**Tgl/Waktu            ** : `{tanggal}`
+Tgl/Waktu           : `{tanggal}`
 
-**Admin ID             ** : `{admin}`
+Admin ID            : `{admin}`
 """
         )
 
