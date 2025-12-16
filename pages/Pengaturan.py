@@ -142,27 +142,6 @@ else:
 
 st.write("---")
 
-# FITUR GANTI BAHASA
-st.subheader("Ganti Bahasa")
-
-bahasa_list = [
-    "Indonesia", "English (Global)", "China",
-    "Jepang", "Korea", "Arab", "Jawa (Lokal)"
-]
-
-bahasa_index = (
-    bahasa_list.index(st.session_state.bahasa)
-    if st.session_state.bahasa in bahasa_list else 0
-)
-
-bahasa = st.selectbox("Pilih Bahasa", bahasa_list, index=bahasa_index)
-
-if st.button("Simpan"):
-    st.session_state.bahasa = bahasa
-    st.success(f"Antarmuka berhasil diubah ke: {bahasa}")
-
-st.write("---")
-
 # LOGOUT
 if st.button("LOGOUT", type="primary"):
     st.session_state.logged_in = False
