@@ -2,17 +2,18 @@ import streamlit as st
 import requests
 import json
 from datetime import datetime
-import google.generativeai as genai
 import os
 import uuid
+import google.generativeai as genai
 
+# ================== STYLE ==================
 st.markdown("""
 <style>
 .stApp {
     background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
     color: #e0f7fa;
 }
-h1, h2, h3, h4 {
+h1, h2, h3 {
     color: #00bcd4;
 }
 .stButton>button {
@@ -25,11 +26,12 @@ h1, h2, h3, h4 {
 </style>
 """, unsafe_allow_html=True)
 
+# ================== LOGO ==================
 a, b, c = st.columns(3)
 with a:
     st.image("LogoNuevaMoneda.png", width=750)
 
-# LOGIN GUARD
+# ================== LOGIN GUARD ==================
 def require_login_page():
     if not st.session_state.get("logged_in"):
         st.warning("Silakan login terlebih dahulu.")
@@ -39,60 +41,56 @@ require_login_page()
 
 st.title("Fitur Penukaran Mata Uang")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# =================================================
+# 🔴 PATH KE FOLDER UTAMA (INI KUNCI PERBAIKAN)
+# =================================================
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 TRANSACTION_FILE = os.path.join(BASE_DIR, "transaction_history.json")
-currency_file = os.path.join(BASE_DIR, "currency_names.json")
+CURRENCY_FILE = os.path.join(BASE_DIR, "currency_names.json")
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
-if os.path.exists(currency_file):
-    with open(currency_file, "r", encoding="utf-8") as f:
+# ================== LOAD CURRENCY NAMES (HASH TABLE) ==================
+if os.path.exists(CURRENCY_FILE):
+    with open(CURRENCY_FILE, "r", encoding="utf-8") as f:
         currency_names = json.load(f)
 else:
-    currency_names = {
-        "USD": "United States Dollar",
-        "IDR": "Indonesian Rupiah",
-        "EUR": "Euro",
-        "JPY": "Japanese Yen"
-    }
-
-def get_currency_name(code):
-    return currency_names.get(code, "Unknown")
+    st.error("currency_names.json tidak ditemukan di folder utama")
+    currency_names = {}
 
 def format_currency(code):
-    return f"{code} - {get_currency_name(code)}"
+    return f"{code} - {currency_names.get(code, code)}"
 
+# ================== EXCHANGE RATE ==================
 def fetch_exchange_rate():
     try:
-        res = requests.get(API_URL)
-        return res.json()
+        res = requests.get(API_URL, timeout=5)
+        return res.json()["rates"]
     except:
         return {
-            "rates": {
-                "USD": 1.0,
-                "IDR": 16000.0,
-                "EUR": 0.9,
-                "JPY": 150.0
-            }
+            "USD": 1.0,
+            "IDR": 16000.0,
+            "EUR": 0.9,
+            "JPY": 150.0
         }
 
 def convert_currency(amount, source, target, rates):
     usd = amount / rates[source] if source != "USD" else amount
     return usd * rates[target]
 
+# ================== GEMINI (DUMMY PROFIT) ==================
 try:
-    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 except:
-    GEMINI_API_KEY = "DUMMY_KEY"
-
-genai.configure(api_key=GEMINI_API_KEY)
+    pass
 
 def gemini_get_profit():
-    return 2.0
+    return 2.0  # persen
 
-# Hash Table dengan arahan GPT
+# ================== HASH TABLE TRANSACTION ==================
 def generate_transaction_id():
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     rand = uuid.uuid4().hex[:6].upper()
     return f"TRX-{timestamp}-{rand}"
 
@@ -109,15 +107,15 @@ def save_transaction(data):
         history = {}
 
     trx_id = generate_transaction_id()
-    history[trx_id] = data
+    history[trx_id] = data  # HASH TABLE (KEY: trx_id)
 
     with open(TRANSACTION_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=4, ensure_ascii=False)
 
     return trx_id
 
-data = fetch_exchange_rate()
-rates = data["rates"]
+# ================== UI ==================
+rates = fetch_exchange_rate()
 
 jumlah = st.number_input("Nominal:", min_value=1.0)
 
@@ -133,9 +131,10 @@ tujuan = st.selectbox(
     format_func=format_currency
 )
 
+# ================== ACTION ==================
 if st.button("Konversi"):
     if asal == tujuan:
-        st.error("Mata uang tidak boleh sama")
+        st.error("Mata uang asal dan tujuan tidak boleh sama")
         st.stop()
 
     market = convert_currency(jumlah, asal, tujuan, rates)
@@ -145,7 +144,7 @@ if st.button("Konversi"):
     profit_idr = (market / rates[tujuan]) * (profit_rate / 100) * rates["IDR"]
 
     admin = st.session_state.get("username", "unknown")
-    tanggal = datetime.now().strftime("%d-%m-%Y")
+    tanggal = datetime.now().strftime("%d-%m-%Y %H:%M")
 
     transaksi = {
         "tanggal": tanggal,
@@ -160,18 +159,16 @@ if st.button("Konversi"):
 
     trx_id = save_transaction(transaksi)
 
-    st.success(
-        f"""
+    st.success(f"""
 Transaksi berhasil disimpan ✅
 
 ID Transaksi        : `{trx_id}`  
 
-Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({get_currency_name(asal)})  
+Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({currency_names.get(asal)})  
 
-Mata Uang Tujuan    : `{hasil:,.2f} {tujuan}` ({get_currency_name(tujuan)})  
+Mata Uang Tujuan    : `{hasil:,.2f} {tujuan}` ({currency_names.get(tujuan)})  
 
 Profit              : `Rp {profit_idr:,.2f}`  
 
 Admin               : `{admin}`
-"""
-    )
+""")
