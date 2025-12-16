@@ -9,8 +9,10 @@ init_db()
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+
 if "username" not in st.session_state:
     st.session_state.username = ""
+
 if "page" not in st.session_state:
     st.session_state.page = "login"
 
@@ -25,10 +27,9 @@ require_login_app()
 
 if st.session_state.page == "login":
     login_page()
+
 elif st.session_state.page == "signup":
     signup_page()
+
 elif st.session_state.page == "forgot":
     forgot_password_page()
-else:
-    st.title(f"Halo, {st.session_state.username}")
-    st.success("Selamat datang di NuevaMoneda")

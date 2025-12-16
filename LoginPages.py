@@ -4,24 +4,14 @@ from database import validate_user
 def login_page():
     st.markdown("""
         <style>
-            .stApp {
-                background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
-                color: #e0f7fa;
-            }
             .title {
                 text-align: center;
                 color: #00bcd4;
                 font-size: 2.5em;
-                margin-top: 20px;
-                margin-bottom: 40px;
-                text-shadow: 0 0 10px #00bcd4, 0 0 20px #00bcd4;
+                margin-bottom: 30px;
             }
         </style>
     """, unsafe_allow_html=True)
-
-    a, b, c = st.columns(3)
-    with b:
-        st.image("LogoNuevaMoneda.png", width=750)
 
     st.markdown('<div class="title">Selamat Datang di NuevaMoneda</div>', unsafe_allow_html=True)
 
@@ -32,8 +22,7 @@ def login_page():
         if validate_user(username, password):
             st.session_state.logged_in = True
             st.session_state.username = username
-            st.success("Login berhasil")
-            st.rerun()
+            st.switch_page("pages/Home.py")  # ⬅ HOME DI FOLDER pages
         else:
             st.error("❌ Username atau password salah")
 

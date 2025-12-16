@@ -8,7 +8,6 @@ def forgot_password_page():
                 text-align: center;
                 color: #ff9800;
                 font-size: 2.2em;
-                margin-top: 20px;
                 margin-bottom: 30px;
             }
         </style>
