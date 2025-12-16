@@ -2,8 +2,7 @@ import sqlite3
 
 DB_NAME = "usernameAplikasi.db"
 
-
-# Pembuatan database sistem dibantu oleh GPT
+# SISTEM DATABASE DIBANTU GPT
 def get_connection():
     return sqlite3.connect(DB_NAME, check_same_thread=False)
 
@@ -22,7 +21,10 @@ def init_db():
 def user_exists(username):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+    cur.execute(
+        "SELECT 1 FROM users WHERE username = ?",
+        (username,)
+    )
     result = cur.fetchone()
     conn.close()
     return result is not None
@@ -52,11 +54,28 @@ def validate_user(username, password):
     conn.close()
     return result is not None
 
+def update_password(username, new_password):
+    if not user_exists(username):
+        return False
+
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE users SET password = ? WHERE username = ?",
+        (new_password, username)
+    )
+    conn.commit()
+    conn.close()
+    return True
+
 def update_username(old_username, new_username):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT 1 FROM users WHERE username = ?", (new_username,))
+    cur.execute(
+        "SELECT 1 FROM users WHERE username = ?",
+        (new_username,)
+    )
     if cur.fetchone():
         conn.close()
         return False
@@ -73,6 +92,9 @@ def update_username(old_username, new_username):
 def delete_user(username):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("DELETE FROM users WHERE username = ?", (username,))
+    cur.execute(
+        "DELETE FROM users WHERE username = ?",
+        (username,)
+    )
     conn.commit()
     conn.close()

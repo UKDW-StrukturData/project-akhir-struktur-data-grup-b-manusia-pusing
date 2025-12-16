@@ -32,10 +32,19 @@ def login_page():
         if validate_user(username, password):
             st.session_state.logged_in = True
             st.session_state.username = username
-            st.switch_page("pages/Home.py")
+            st.success("Login berhasil")
+            st.rerun()
         else:
             st.error("❌ Username atau password salah")
 
-    if st.button("Belum punya akun? Daftar"):
-        st.session_state.page = "signup"
-        st.rerun()
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("Lupa Password?"):
+            st.session_state.page = "forgot"
+            st.rerun()
+
+    with col2:
+        if st.button("Belum punya akun? Daftar"):
+            st.session_state.page = "signup"
+            st.rerun()
