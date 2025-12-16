@@ -1,5 +1,14 @@
+import sys
+import os
 import streamlit as st
+
+# ===== FIX IMPORT DATABASE (WAJIB UNTUK FILE DI /pages) =====
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
+
 from database import delete_user
+# ===========================================================
 
 st.markdown("""
     <style>
@@ -93,9 +102,6 @@ st.markdown("""
     <h1 style='text-align:center; color:#00bcd4; margin-bottom: 0px;'>PENGATURAN AKUN</h1>
 """, unsafe_allow_html=True)
 
-
-# st.markdown("<div class='card'>", unsafe_allow_html=True)
-
 col1, col2 = st.columns([1, 2])
 
 with col1:
@@ -106,20 +112,24 @@ with col1:
 
 with col2:
     st.subheader("Username Aktif")
-    st.markdown(f"<h2 style='color:white;'>{st.session_state.username}</h2>", unsafe_allow_html=True)
-    # st.write(f"**ID Kredensial:** `{st.session_state.user_id}`") 
+    st.markdown(
+        f"<h2 style='color:white;'>{st.session_state.username}</h2>",
+        unsafe_allow_html=True
+    )
 
 st.write("---")
 
-
-# FITUR GANTI USERNAME (Dibuka Dengan Button)
+# FITUR GANTI USERNAME
 st.subheader("Ganti Username")
 
 if not st.session_state.show_change_username:
     if st.button("Ganti Username"):
         st.session_state.show_change_username = True
 else:
-    new_username = st.text_input("Masukkan Username Baru", value=st.session_state.username)
+    new_username = st.text_input(
+        "Masukkan Username Baru",
+        value=st.session_state.username
+    )
     col_save, col_cancel = st.columns(2)
     with col_save:
         if st.button("Simpan Username", use_container_width=True):
@@ -132,15 +142,18 @@ else:
 
 st.write("---")
 
-
 # FITUR GANTI BAHASA
 st.subheader("Ganti Bahasa")
 
 bahasa_list = [
-    "Indonesia", "English (Global)", "China", "Jepang", "Korea", "Arab", "Jawa (Lokal)"
+    "Indonesia", "English (Global)", "China",
+    "Jepang", "Korea", "Arab", "Jawa (Lokal)"
 ]
 
-bahasa_index = bahasa_list.index(st.session_state.bahasa) if st.session_state.bahasa in bahasa_list else 0
+bahasa_index = (
+    bahasa_list.index(st.session_state.bahasa)
+    if st.session_state.bahasa in bahasa_list else 0
+)
 
 bahasa = st.selectbox("Pilih Bahasa", bahasa_list, index=bahasa_index)
 
@@ -150,8 +163,7 @@ if st.button("Simpan"):
 
 st.write("---")
 
-
-# GANTI AKUN
+# LOGOUT
 if st.button("LOGOUT", type="primary"):
     st.session_state.logged_in = False
     st.session_state.username = ""
@@ -160,7 +172,6 @@ if st.button("LOGOUT", type="primary"):
     st.success("Berhasil logout")
     st.switch_page("LoginPages.py")
 
-    
 # HAPUS AKUN
 st.subheader("Manajemen Akun Permanen")
 
