@@ -58,7 +58,6 @@ def signup_page():
         else:
             st.session_state.CREDENTIALS[username] = password
             st.success("✅ Akun berhasil dibuat! Mengalihkan ke halaman login...")
-            time.sleep(1.5)
             st.session_state.page = "login"
 
     if st.button("Kembali ke Login"):
