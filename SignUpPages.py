@@ -43,39 +43,26 @@ def signup_page():
         st.image("LogoNuevaMoneda.png", width=750)
 
     st.markdown('<div class="title">Silahkan Membuat Akun Baru</div>', unsafe_allow_html=True)
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    confirm  = st.text_input("Konfirmasi Password", type="password")
 
-    if st.session_state.get("signup_success"):
-        st.success("🎉 Akun berhasil dibuat! Silakan login.")
-        st.toast("Akun berhasil dibuat", icon="✅")
-        st.session_state.redirect_counter = 1
-
-    new_user = st.text_input("Username", key="signup_username")
-    new_pass = st.text_input("Password", type="password", key="signup_password")
-    confirm  = st.text_input("Konfirmasi Password", type="password", key="signup_confirm")
-
-    if st.button("Daftar", key="signup_action"):
-        if not new_user or not new_pass or not confirm:
-            st.error("Semua kolom wajib diisi.")
-        elif new_user in st.session_state.CREDENTIALS:
-            st.warning("Username sudah digunakan.")
-        elif new_pass != confirm:
-            st.error("Password tidak cocok.")
+    if st.button("Daftar"):
+        if not username or not password or not confirm:
+            st.warning("⚠️ Semua kolom wajib diisi.")
+        elif username in st.session_state.CREDENTIALS:
+            st.warning("⚠️ Username sudah digunakan.")
+        elif password != confirm:
+            st.warning("⚠️ Password dan konfirmasi tidak sama.")
         else:
-            st.session_state.CREDENTIALS[new_user] = new_pass
-            st.session_state.signup_success = True
-            st.rerun()
-
-    if st.session_state.get("redirect_counter") == 1:
-        st.session_state.redirect_counter = 0
-        st.session_state.page = "login"
-        st.rerun()
+            st.session_state.CREDENTIALS[username] = password
+            st.success("✅ Akun berhasil dibuat! Silakan login.")
 
     if st.button("Kembali ke Login"):
         st.session_state.page = "login"
         st.rerun()
 
 if "CREDENTIALS" not in st.session_state:
-    st.session_state.CREDENTIALS = {"admin": "admin"}
-
-if "signup_success" not in st.session_state:
-    st.session_state.signup_success = False
+    st.session_state.CREDENTIALS = {
+        "admin": "admin"
+    }
