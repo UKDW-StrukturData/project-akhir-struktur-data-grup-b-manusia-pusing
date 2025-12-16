@@ -29,7 +29,6 @@ a, b, c = st.columns(3)
 with a:
     st.image("LogoNuevaMoneda.png", width=750)
 
-# LOGIN GUARD
 def require_login_page():
     if not st.session_state.get("logged_in"):
         st.warning("Silakan login terlebih dahulu.")
@@ -39,9 +38,12 @@ require_login_page()
 
 st.title("Fitur Penukaran Mata Uang")
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TRANSACTION_FILE = os.path.join(BASE_DIR, "transaction_history.json")
+
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
 
-currency_file = "currency_names.json"
+currency_file = os.path.join(BASE_DIR, "currency_names.json")
 
 if os.path.exists(currency_file):
     with open(currency_file, "r", encoding="utf-8") as f:
@@ -60,11 +62,15 @@ def format_currency(code):
 def fetch_exchange_rate():
     try:
         res = requests.get(API_URL)
-        raw = res.json()
-        return raw
+        return res.json()
     except:
         return {
-            "rates": {"USD": 1.0, "IDR": 16000.0, "EUR": 0.9, "JPY": 150.0}
+            "rates": {
+                "USD": 1.0,
+                "IDR": 16000.0,
+                "EUR": 0.9,
+                "JPY": 150.0
+            }
         }
 
 def convert_currency(amount, source, target, rates):
@@ -79,18 +85,17 @@ except:
 genai.configure(api_key=GEMINI_API_KEY)
 
 def gemini_get_profit():
-    return 2.0  
+    return 2.0
 
+# Hash Table dibantu GPT agar lebih rapi
 def generate_transaction_id():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     rand = uuid.uuid4().hex[:6].upper()
     return f"TRX-{timestamp}-{rand}"
 
 def save_transaction(data):
-    file_path = "transaction_history.json"
-
-    if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
+    if os.path.exists(TRANSACTION_FILE):
+        with open(TRANSACTION_FILE, "r", encoding="utf-8") as f:
             try:
                 history = json.load(f)
                 if not isinstance(history, dict):
@@ -103,7 +108,7 @@ def save_transaction(data):
     trx_id = generate_transaction_id()
     history[trx_id] = data
 
-    with open(file_path, "w", encoding="utf-8") as f:
+    with open(TRANSACTION_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=4, ensure_ascii=False)
 
     return trx_id
@@ -153,7 +158,7 @@ if st.button("Konversi"):
     trx_id = save_transaction(transaksi)
 
     st.success(
-    f"""
+        f"""
 Transaksi berhasil disimpan ✅
 
 ID Transaksi        : `{trx_id}`  
@@ -166,4 +171,4 @@ Profit              : `Rp {profit_idr:,.2f}`
 
 Admin               : `{admin}`
 """
-)
+    )
