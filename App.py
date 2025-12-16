@@ -5,7 +5,6 @@ from SignUpPages import signup_page
 
 st.set_page_config(page_title="NeuvaMoneda", layout="wide")
 
-# Mengeksekusi file css dengan batuuan CHAT GPT
 def load_css():
     css_file = "styles.css"
     if os.path.exists(css_file):
@@ -22,7 +21,6 @@ if "username" not in st.session_state:
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {}
 
-# Fungsi GUARD dibantu untuk CHAT GPT
 def login_guard():
     if not st.session_state.logged_in:
         st.warning("Silakan login terlebih dahulu.")
@@ -35,7 +33,7 @@ def page_dashboard():
     st.sidebar.title("NeuvaMoneda — Admin Panel")
     st.sidebar.write("Pilih menu aplikasi.")
 
-    st.title(f"Halo, {st.session_state.username} !)")
+    st.title(f"Halo, {st.session_state.username} !")
     st.success("Selamat datang di Dashboard NeuvaMoneda!")
 
     if st.sidebar.button("Logout"):

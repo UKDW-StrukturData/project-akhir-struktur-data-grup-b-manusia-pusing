@@ -37,16 +37,6 @@ def login_page():
                 background: #00e5ff;
                 box-shadow: 0 0 10px #00e5ff, 0 0 25px #00e5ff;
             }
-            .login-card {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 20px;
-                padding: 40px;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-                margin: auto;
-                max-width: 400px;
-            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -56,34 +46,24 @@ def login_page():
 
     st.markdown('<div class="title">Selamat Datang di NuevaMoneda</div>', unsafe_allow_html=True)
 
-    with st.container():
-        # st.markdown('<div class="login-card">', unsafe_allow_html=True)
+    username = st.text_input("Username", key="login_username")
+    password = st.text_input("Password", type="password", key="login_password")
 
-        username = st.text_input("Username", key="login_username")
-        password = st.text_input("Password", type="password", key="login_password")
+    if st.button("Masuk", key="login_btn"):
+        if (
+            username in st.session_state.CREDENTIALS
+            and st.session_state.CREDENTIALS[username] == password
+        ):
+            st.session_state.logged_in = True
+            st.session_state.username = username
+            st.switch_page("pages/Home.py")
+        else:
+            st.error("Username atau password salah.")
 
-        if st.button("Masuk", key="login_btn"):
-            if (
-                username in st.session_state.CREDENTIALS
-                and st.session_state.CREDENTIALS[username] == password
-            ):
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.switch_page("pages/Home.py")
-            else:
-                st.error("Username atau password salah.")
+    if st.button("Belum punya akun? Daftar", key="signup_btn"):
+        st.session_state.page = "signup"
+        st.rerun()
 
-        if st.button("Belum punya akun? Daftar", key="signup_btn"):
-            st.session_state.page = "signup"
-            st.rerun()
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# Inisialisasi state
+# Inisialisasi state (AMAN)
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {"admin": "admin"}
-
-if "page" not in st.session_state:
-    st.session_state.page = "login"
-
-login_page()
