@@ -86,7 +86,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-st.markdown("<div class='card'>", unsafe_allow_html=True)
+# st.markdown("<div class='card'>", unsafe_allow_html=True)
 
 col1, col2 = st.columns([1, 2])
 
@@ -99,7 +99,7 @@ with col1:
 with col2:
     st.subheader("Username Aktif")
     st.markdown(f"<h2 style='color:white;'>{st.session_state.username}</h2>", unsafe_allow_html=True)
-    st.write(f"**ID Kredensial:** `{st.session_state.user_id}`") 
+    # st.write(f"**ID Kredensial:** `{st.session_state.user_id}`") 
 
 st.write("---")
 
@@ -126,7 +126,7 @@ st.write("---")
 
 
 # FITUR GANTI BAHASA
-st.subheader("Ganti Bahasa (Aktif: {st.session_state.bahasa})")
+st.subheader("Ganti Bahasa")
 
 bahasa_list = [
     "Indonesia", "English (Global)", "China", "Jepang", "Korea", "Arab", "Jawa (Lokal)"
@@ -136,7 +136,7 @@ bahasa_index = bahasa_list.index(st.session_state.bahasa) if st.session_state.ba
 
 bahasa = st.selectbox("Pilih Bahasa", bahasa_list, index=bahasa_index)
 
-if st.button("Simpan Bahasa"):
+if st.button("Simpan"):
     st.session_state.bahasa = bahasa
     st.success(f"Antarmuka berhasil diubah ke: {bahasa}")
 
@@ -146,14 +146,10 @@ st.write("---")
 # GANTI AKUN
 st.subheader("Kelola Sesi Akun")
 
-if st.button("Keluar & Ganti Akun", type="secondary"):
+if st.button("LOGOUT", type="primary"):
     st.session_state.logged_in = False
     st.success("Sesi berhasil diakhiri. Kembali ke Halaman Login...")
     st.switch_page("LoginPages.py")
-
-st.write("---")
-
-
 # HAPUS AKUN
 st.subheader("Manajemen Akun Permanen")
 
