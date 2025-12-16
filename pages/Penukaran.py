@@ -29,6 +29,7 @@ a, b, c = st.columns(3)
 with a:
     st.image("LogoNuevaMoneda.png", width=750)
 
+# LOGIN GUARD
 def require_login_page():
     if not st.session_state.get("logged_in"):
         st.warning("Silakan login terlebih dahulu.")
@@ -40,10 +41,9 @@ st.title("Fitur Penukaran Mata Uang")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TRANSACTION_FILE = os.path.join(BASE_DIR, "transaction_history.json")
+currency_file = os.path.join(BASE_DIR, "currency_names.json")
 
 API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
-
-currency_file = os.path.join(BASE_DIR, "currency_names.json")
 
 if os.path.exists(currency_file):
     with open(currency_file, "r", encoding="utf-8") as f:
@@ -56,8 +56,11 @@ else:
         "JPY": "Japanese Yen"
     }
 
+def get_currency_name(code):
+    return currency_names.get(code, "Unknown")
+
 def format_currency(code):
-    return f"{code} - {currency_names.get(code, 'Unknown')}"
+    return f"{code} - {get_currency_name(code)}"
 
 def fetch_exchange_rate():
     try:
@@ -87,7 +90,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 def gemini_get_profit():
     return 2.0
 
-# Hash Table dibantu GPT agar lebih rapi
+# Hash Table dengan arahan GPT
 def generate_transaction_id():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     rand = uuid.uuid4().hex[:6].upper()
@@ -163,9 +166,9 @@ Transaksi berhasil disimpan ✅
 
 ID Transaksi        : `{trx_id}`  
 
-Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({currency_names.get(asal)})  
+Mata Uang Asal      : `{jumlah:,.2f} {asal}` ({get_currency_name(asal)})  
 
-Mata Uang Tujuan    : `{hasil:,.2f} {tujuan}` ({currency_names.get(tujuan)})  
+Mata Uang Tujuan    : `{hasil:,.2f} {tujuan}` ({get_currency_name(tujuan)})  
 
 Profit              : `Rp {profit_idr:,.2f}`  
 
