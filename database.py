@@ -2,6 +2,8 @@ import sqlite3
 
 DB_NAME = "usernameAplikasi.db"
 
+
+# Pembuatan database sistem dibantu oleh GPT
 def get_connection():
     return sqlite3.connect(DB_NAME, check_same_thread=False)
 
@@ -50,10 +52,27 @@ def validate_user(username, password):
     conn.close()
     return result is not None
 
+def update_username(old_username, new_username):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT 1 FROM users WHERE username = ?", (new_username,))
+    if cur.fetchone():
+        conn.close()
+        return False
+
+    cur.execute(
+        "UPDATE users SET username = ? WHERE username = ?",
+        (new_username, old_username)
+    )
+
+    conn.commit()
+    conn.close()
+    return True
+
 def delete_user(username):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("DELETE FROM users WHERE username = ?", (username,))
     conn.commit()
     conn.close()
-
