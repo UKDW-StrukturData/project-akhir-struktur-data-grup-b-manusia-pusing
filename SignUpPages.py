@@ -64,7 +64,7 @@ def signup_page():
     with b:
         st.image("LogoNuevaMoneda.png", width=750)
 
-    st.markdown('<div class="title">Buat Akun Baru</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">Silahkan Membuat Akun Baru</div>', unsafe_allow_html=True)
 
     with st.container():
         new_user = st.text_input("Username", key="signup_username")
