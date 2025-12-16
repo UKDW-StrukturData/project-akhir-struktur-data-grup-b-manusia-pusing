@@ -4,11 +4,20 @@ from database import validate_user
 def login_page():
     st.markdown("""
         <style>
+            .stApp {
+                background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+                color: #e0f7fa;
+            }
             .title {
                 text-align: center;
                 color: #00bcd4;
                 font-size: 2.5em;
-                margin-bottom: 30px;
+                font-weight: bold;
+                margin-top: 20px;
+                margin-bottom: 40px;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                text-shadow: 0 0 15px rgba(0, 188, 212, 0.8);
             }
         </style>
     """, unsafe_allow_html=True)
