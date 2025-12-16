@@ -1,4 +1,5 @@
 import streamlit as st
+from database import delete_user
 
 st.markdown("""
     <style>
@@ -73,11 +74,11 @@ st.markdown("""
 
 
 # Fungsi GUARD
-def require_login():
-    if "logged_in" not in st.session_state or st.session_state.logged_in is False:
-        st.warning("Anda harus login untuk mengakses halaman ini.")
+def require_login_page():
+    if not st.session_state.get("logged_in"):
+        st.warning("Silakan login terlebih dahulu.")
         st.switch_page("LoginPages.py")
-require_login()
+require_login_page()
 
 if "username" not in st.session_state:
     st.session_state.username = "ADMIN"
@@ -151,22 +152,26 @@ st.write("---")
 
 
 # GANTI AKUN
-st.subheader("Kelola Sesi Akun")
-
 if st.button("LOGOUT", type="primary"):
     st.session_state.logged_in = False
-    st.success("Sesi berhasil diakhiri. Kembali ke Halaman Login...")
+    st.session_state.username = ""
+    st.session_state.page = "login"
+
+    st.success("Berhasil logout")
     st.switch_page("LoginPages.py")
+
+    
 # HAPUS AKUN
 st.subheader("Manajemen Akun Permanen")
 
 if st.button("⚠️ Hapus Akun Permanen", type="primary"):
-    # Logika penghapusan kredensial
-    if st.session_state.get("username") in st.session_state.get("CREDENTIALS", {}):
-        del st.session_state.CREDENTIALS[st.session_state.username]
-    
-    st.error("Akun berhasil dihapus! Sesi diakhiri.")
+    delete_user(st.session_state.username)
+
     st.session_state.logged_in = False
+    st.session_state.username = ""
+    st.session_state.page = "login"
+
+    st.error("Akun berhasil dihapus permanen.")
     st.switch_page("LoginPages.py")
 
 st.markdown("</div>", unsafe_allow_html=True)

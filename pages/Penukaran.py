@@ -56,12 +56,11 @@ with a:
     st.image("LogoNuevaMoneda.png", width=750 )
 
 # LOGIN GUARD
-def require_login():
-    if not st.session_state.get("logged_in", False):
+def require_login_page():
+    if not st.session_state.get("logged_in"):
         st.warning("Silakan login terlebih dahulu.")
         st.switch_page("LoginPages.py")
-
-require_login()
+require_login_page()
 
 st.title("Fitur Penukaran Mata Uang")
 

@@ -60,12 +60,11 @@ with col1:
     st.image("LogoNuevaMoneda.png", width=250)
 
 # LOGIN GUARD 
-def require_login():
-    if "logged_in" not in st.session_state or not st.session_state.logged_in:
-        st.warning("Anda harus login untuk mengakses halaman ini.")
+def require_login_page():
+    if not st.session_state.get("logged_in"):
+        st.warning("Silakan login terlebih dahulu.")
         st.switch_page("LoginPages.py")
-
-require_login()
+require_login_page()
 
 st.title("LogHistory Transaksi")
 st.write("Riwayat transaksi penukaran uang Anda.")
