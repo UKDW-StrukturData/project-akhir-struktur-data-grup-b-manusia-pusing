@@ -54,7 +54,7 @@ def login_page():
     with b:
         st.image("LogoNuevaMoneda.png", width=750)
 
-    st.markdown('<div class="title">Selamat Datang Kembali!</div>', unsafe_allow_html=True)
+    st.markdown('<div class="title">Selamat Datang di NuevaMoneda</div>', unsafe_allow_html=True)
 
     with st.container():
         # st.markdown('<div class="login-card">', unsafe_allow_html=True)
