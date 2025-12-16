@@ -57,7 +57,7 @@ def signup_page():
     st.markdown('<div class="title">Buat Akun Baru</div>', unsafe_allow_html=True)
 
     with st.container():
-        st.markdown('<div class="signup-card">', unsafe_allow_html=True)
+        # st.markdown('<div class="signup-card">', unsafe_allow_html=True)
 
         new_user = st.text_input("Username", key="signup_username")
         new_pass = st.text_input("Password", type="password", key="signup_password")

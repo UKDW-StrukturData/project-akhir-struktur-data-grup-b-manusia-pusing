@@ -170,7 +170,7 @@ if data and "rates" in data:
     st.subheader("Hitung Konversi Mata Uang")
     
     with st.container():
-        st.markdown('<div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">', unsafe_allow_html=True)
+        # st.markdown('<div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">', unsafe_allow_html=True)
         jumlah = st.number_input("Masukkan nominal:", min_value=1.0)
         asal = st.selectbox(
             "Mata uang asal:",

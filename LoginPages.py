@@ -57,7 +57,7 @@ def login_page():
     st.markdown('<div class="title">Selamat Datang Kembali!</div>', unsafe_allow_html=True)
 
     with st.container():
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
+        # st.markdown('<div class="login-card">', unsafe_allow_html=True)
 
         username = st.text_input("Username", key="login_username")
         password = st.text_input("Password", type="password", key="login_password")
