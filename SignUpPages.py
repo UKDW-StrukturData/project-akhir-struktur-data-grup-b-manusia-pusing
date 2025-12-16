@@ -37,7 +37,6 @@ def signup_page():
                 background: #00e5ff;
                 box-shadow: 0 0 10px #00e5ff, 0 0 25px #00e5ff;
             }
-            /* Card untuk menampung form signup */
             .signup-card {
                 background: rgba(255, 255, 255, 0.1);
                 border-radius: 20px;
@@ -51,23 +50,20 @@ def signup_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # pembuatan markdown dibantu oleh GPT
-    a,b,c = st.columns(3)
-    
+    a, b, c = st.columns(3)
     with b:
-        st.image("LogoNuevaMoneda.png", width=750 )
+        st.image("LogoNuevaMoneda.png", width=750)
+
     st.markdown('<div class="title">Buat Akun Baru</div>', unsafe_allow_html=True)
-    
+
     with st.container():
         st.markdown('<div class="signup-card">', unsafe_allow_html=True)
+
         new_user = st.text_input("Username")
         new_pass = st.text_input("Password", type="password")
         confirm = st.text_input("Konfirmasi Password", type="password")
-    
-        if st.button("Daftar", key="signup_action"):
-            if "CREDENTIALS" not in st.session_state:
-                st.session_state.CREDENTIALS = {}
 
+        if st.button("Daftar", key="signup_action"):
             if new_user == "" or new_pass == "":
                 st.error("Semua kolom wajib diisi.")
             elif new_user in st.session_state.CREDENTIALS:
@@ -78,19 +74,19 @@ def signup_page():
                 st.session_state.CREDENTIALS[new_user] = new_pass
                 st.success("Akun berhasil dibuat! Silakan login.")
                 st.session_state.page = "login"
-                st.switch_page("LoginPages.py")
-    
+                st.rerun()
+
         if st.button("Kembali ke Login", key="back_to_login"):
             st.session_state.page = "login"
-            st.switch_page("LoginPages.py")
-    
-        st.markdown("</div>", unsafe_allow_html=True) 
+            st.rerun()
 
-# Panggil fungsi signup_page
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# Inisialisasi state
 if "page" not in st.session_state:
-    st.session_state.page = "signup" 
-    
+    st.session_state.page = "signup"
+
 if "CREDENTIALS" not in st.session_state:
-    st.session_state.CREDENTIALS = {"admin": "admin"} 
+    st.session_state.CREDENTIALS = {"admin": "admin"}
 
 signup_page()

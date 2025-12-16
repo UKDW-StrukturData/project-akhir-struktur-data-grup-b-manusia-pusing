@@ -9,7 +9,7 @@ def login_page():
             }
             .title {
                 text-align: center;
-                color: #00bcd4; /* Aksen Cyan Neon */
+                color: #00bcd4;
                 font-size: 2.5em;
                 margin-top: 20px;
                 margin-bottom: 40px;
@@ -37,7 +37,6 @@ def login_page():
                 background: #00e5ff;
                 box-shadow: 0 0 10px #00e5ff, 0 0 25px #00e5ff;
             }
-            /* Card untuk menampung form login */
             .login-card {
                 background: rgba(255, 255, 255, 0.1);
                 border-radius: 20px;
@@ -50,39 +49,40 @@ def login_page():
             }
         </style>
     """, unsafe_allow_html=True)
-    
-    a,b,c = st.columns(3)
-    
+
+    a, b, c = st.columns(3)
     with b:
-        st.image("LogoNuevaMoneda.png", width=750 )
-        
+        st.image("LogoNuevaMoneda.png", width=750)
+
     st.markdown('<div class="title">Selamat Datang Kembali!</div>', unsafe_allow_html=True)
 
     with st.container():
         st.markdown('<div class="login-card">', unsafe_allow_html=True)
+
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
-    
+
         if st.button("Masuk", key="login_btn"):
-            if 'CREDENTIALS' in st.session_state and username in st.session_state.CREDENTIALS and st.session_state.CREDENTIALS[username] == password:
+            if (
+                username in st.session_state.CREDENTIALS
+                and st.session_state.CREDENTIALS[username] == password
+            ):
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.switch_page("pages/Home.py")
             else:
                 st.error("Username atau password salah.")
-    
+
         if st.button("Belum punya akun? Daftar", key="signup_btn"):
             st.session_state.page = "signup"
             st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True) # Tutup div card
 
-# Inisialisasi state jika belum ada
+        st.markdown("</div>", unsafe_allow_html=True)
+
 if "CREDENTIALS" not in st.session_state:
     st.session_state.CREDENTIALS = {"admin": "admin"}
+
 if "page" not in st.session_state:
     st.session_state.page = "login"
 
-if st.session_state.page == "login":
-    login_page()
-else:
-    st.switch_page("SignUpPages.py")
+login_page()
