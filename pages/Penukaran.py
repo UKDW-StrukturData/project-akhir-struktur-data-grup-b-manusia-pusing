@@ -7,22 +7,60 @@ import uuid
 import google.generativeai as genai
 
 st.markdown("""
-<style>
-.stApp {
-    background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
-    color: #e0f7fa;
-}
-h1, h2, h3 {
-    color: #00bcd4;
-}
-.stButton>button {
-    width: 100%;
-    background: #00bcd4;
-    color: #0f1c2c;
-    font-weight: bold;
-    border-radius: 10px;
-}
-</style>
+    <style>
+        /* ================= GAYA BARU (Background & Glassmorphism) ================= */
+        .stApp {
+            /* Gradasi Ungu Gelap ke Hitam Pekat */
+            background: radial-gradient(ellipse at center, #240b36 0%, #000000 100%);
+            color: #e0f7fa;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #875aff; /* Judul Neon Ungu */
+            text-shadow: 0 0 8px rgba(135, 90, 255, 0.7);
+        }
+        
+        /* Glassmorphism Card (Meniru Container Utama) */
+        .st-emotion-cache-1cypcdb { /* Targetting main content container */
+            background: rgba(46, 17, 71, 0.35); 
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(135, 90, 255, 0.2); 
+        }
+        
+        /* --- STYLE BARU UNTUK SIDEBAR DAN NAVIGASI --- */
+        
+        /* Sidebar container utama (latar belakang) */
+        .st-emotion-cache-16txto3 { /* Selector untuk sidebar container */
+            background-color: rgba(13, 5, 20, 0.9) !important; /* Ungu sangat gelap, hampir hitam */
+        }
+        
+        /* Gaya untuk item navigasi yang SEDANG DIPILIH (Active/Selected Page) */
+        .st-emotion-cache-1ft9w09 { /* Selector untuk item navigasi yang terpilih */
+            background-color: #5e35b1 !important; /* Ungu Solid untuk highlight */
+            color: #ffffff !important;
+            border-radius: 10px;
+        }
+
+        /* Gaya untuk teks di sidebar */
+        .st-emotion-cache-1ft9w09 a, .st-emotion-cache-1ft9w09 div { 
+            color: #ffffff !important; 
+        }
+
+        /* Gaya untuk teks item navigasi yang TIDAK DIPILIH (Default/Inactive) */
+        .st-emotion-cache-1ft9w09 a:not(.st-emotion-cache-1ft9w09 a) {
+            color: #b196ff !important;
+        }
+        
+        /* --- END STYLE SIDEBAR --- */
+
+        /* Custom styling untuk Dataframe (Tabel) - Glassmorphism */
+        /* ... (CSS Dataframe lainnya tetap sama) ... */
+    </style>
 """, unsafe_allow_html=True)
 
 a, b, c = st.columns(3)

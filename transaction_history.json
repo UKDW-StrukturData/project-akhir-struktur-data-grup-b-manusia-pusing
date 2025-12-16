@@ -8,5 +8,35 @@
         "hasil_akhir": 444745.3623978201,
         "profit_idr": 9076.43596730245,
         "profit_rate_percent": 2.0
+    },
+    "TRX-20251216214824-5AD6A0": {
+        "tanggal": "16-12-2025 21:48",
+        "admin": "dinda",
+        "asal": "USD",
+        "tujuan": "IDR",
+        "jumlah_awal": 30.0,
+        "hasil_akhir": 489664.6439999999,
+        "profit_idr": 9993.155999999999,
+        "profit_rate_percent": 2.0
+    },
+    "TRX-20251216215950-F304C3": {
+        "tanggal": "16-12-2025 21:59",
+        "admin": "dinda",
+        "asal": "USD",
+        "tujuan": "IDR",
+        "jumlah_awal": 3.0,
+        "hasil_akhir": 48966.4644,
+        "profit_idr": 999.3155999999999,
+        "profit_rate_percent": 2.0
+    },
+    "TRX-20251216221054-38A7FF": {
+        "tanggal": "16-12-2025 22:10",
+        "admin": "dinda",
+        "asal": "EUR",
+        "tujuan": "IDR",
+        "jumlah_awal": 21.0,
+        "hasil_akhir": 402779.3781433607,
+        "profit_idr": 8219.987309048178,
+        "profit_rate_percent": 2.0
     }
 }

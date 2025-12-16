@@ -6,17 +6,55 @@ import os
 st.markdown("""
     <style>
         .stApp {
-            background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
+            /* Gradasi Ungu Gelap ke Hitam Pekat */
+            background: radial-gradient(ellipse at center, #240b36 0%, #000000 100%);
             color: #e0f7fa;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
         h1, h2, h3, h4, h5, h6 {
-            color: #00bcd4;
-            text-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            color: #875aff; /* Judul Neon Ungu */
+            text-shadow: 0 0 8px rgba(135, 90, 255, 0.7);
         }
+        
+        /* Glassmorphism Card (Meniru Container Utama) */
+        .st-emotion-cache-1cypcdb { /* Targetting main content container */
+            background: rgba(46, 17, 71, 0.35); 
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(135, 90, 255, 0.2); 
+        }
+
+        /* Custom styling untuk Dataframe (Tabel) - Glassmorphism */
         .stDataFrame {
-            border: 1px solid #00bcd4;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+            border: 1px solid rgba(135, 90, 255, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(135, 90, 255, 0.3);
+            background-color: rgba(0, 0, 0, 0.4); /* Background hitam transparan */
+        }
+        /* Header Dataframe */
+        .data-header {
+            background-color: #3b0e5c !important; /* Ungu gelap */
+            color: #e0f7fa !important;
+            font-weight: bold;
+        }
+        /* Rows Dataframe */
+        .data-row {
+            background-color: rgba(0, 0, 0, 0.4) !important;
+            color: #e0f7fa !important;
+        }
+        .data-row:nth-child(even) {
+            background-color: rgba(20, 5, 30, 0.4) !important; /* Row genap sedikit lebih gelap */
+        }
+        
+        /* Sidebar styling */
+        .stSidebar > div:first-child {
+            background: rgba(46, 17, 71, 0.5); /* Sidebar Glassmorphism */
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(135, 90, 255, 0.3);
         }
     </style>
 """, unsafe_allow_html=True)

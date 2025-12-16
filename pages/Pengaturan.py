@@ -13,20 +13,78 @@ from database import delete_user, update_username
 st.markdown("""
     <style>
         .stApp {
-            background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+            background: radial-gradient(ellipse at center, #240b36 0%, #000000 100%);
             color: #e0f7fa;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
         h1, h2, h3, h4 {
-            color: #00bcd4;
+            color: #875aff; /* Neon Ungu */
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
+            text-shadow: 0 0 10px rgba(135, 90, 255, 0.6);
         }
+        
+        /* Glassmorphism Card Settings */
+        .card {
+            background: rgba(46, 17, 71, 0.65); /* Ungu tua transparan */
+            padding: 40px;
+            border-radius: 30px;
+            color: white;
+            width: 95%;
+            margin: 30px auto;
+            box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(25px); /* Sedikit lebih buram */
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(135, 90, 255, 0.35); /* Border neon ungu */
+        }
+        
         .round-img {
             width: 140px;
             height: 140px;
             border-radius: 50%;
-            border: 4px solid #00bcd4;
+            object-fit: cover;
+            border: 4px solid #875aff;
+            box-shadow: 0 0 25px rgba(135, 90, 255, 0.7);
+        }
+        
+        /* Buttons */
+        .stButton>button {
+            background: linear-gradient(90deg, #875aff, #b196ff);
+            color: #000000;
+            font-weight: bold;
+            border-radius: 12px;
+            margin-top: 10px;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 0 10px rgba(135, 90, 255, 0.4);
+        }
+        .stButton>button:hover {
+            background: linear-gradient(90deg, #b196ff, #875aff);
+            box-shadow: 0 0 20px rgba(177, 150, 255, 0.8);
+            transform: scale(1.02);
+        }
+        
+        /* Primary Danger Button (LOGOUT & Hapus) */
+        .stButton button[kind="primary"] {
+            background: linear-gradient(90deg, #ff4b4b, #c62828) !important;
+            box-shadow: 0 0 10px rgba(255, 75, 75, 0.4) !important;
+        }
+        
+        /* Inputs inside card */
+        .stTextInput>div>div>input, .stSelectbox>div>div>div>div>div {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid #875aff;
+            color: #e0f7fa;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 0 5px rgba(135, 90, 255, 0.2);
+        }
+
+        /* Sidebar styling */
+        .stSidebar > div:first-child {
+            background: rgba(46, 17, 71, 0.5); /* Sidebar Glassmorphism */
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(135, 90, 255, 0.3);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -53,7 +111,7 @@ col1, col2 = st.columns([1, 2])
 
 with col1:
     st.markdown(
-        "<img class='round-img' src='https://i.ibb.co/680385F/avatar-futuristic.png'>",
+        "<img class='round-img' src='https://img.icons8.com/lollipop/1200/test-account.jpg'>",
         unsafe_allow_html=True
     )
 
