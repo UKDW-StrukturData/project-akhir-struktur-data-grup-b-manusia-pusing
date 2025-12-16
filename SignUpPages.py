@@ -57,7 +57,7 @@ def signup_page():
             st.warning("⚠️ Password dan konfirmasi tidak sama.")
         else:
             st.session_state.CREDENTIALS[username] = password
-            st.success("✅ Akun berhasil dibuat! Mengalihkan ke halaman login...")
+            st.success("✅ Akun berhasil dibuat! Silahkan Kembali ke Halaman Login")
             st.session_state.page = "login"
 
     if st.button("Kembali ke Login"):
