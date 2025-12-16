@@ -13,6 +13,10 @@ def login_page():
         </style>
     """, unsafe_allow_html=True)
 
+    a, b, c = st.columns(3)
+    with b:
+        st.image("LogoNuevaMoneda.png", width=750)
+        
     st.markdown('<div class="title">Selamat Datang di NuevaMoneda</div>', unsafe_allow_html=True)
 
     username = st.text_input("Username")
