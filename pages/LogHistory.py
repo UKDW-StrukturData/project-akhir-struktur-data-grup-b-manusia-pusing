@@ -5,29 +5,50 @@ import json
 import os
 from streamlit_autorefresh import st_autorefresh
 
-# CSS KUSTOM FUTURISTIK
+# CSS KUSTOM FUTURISTIK MODERN GLASS
 st.markdown("""
     <style>
         .stApp {
-            background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
+            background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
             color: #e0f7fa;
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
         h1, h2, h3, h4 {
-            color: #00bcd4; /* Judul Neon */
-            text-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            color: #00bcd4 !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.7);
         }
+
+        /* Container Kaca */
+        .main .block-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 25px;
+            border: 1px solid rgba(0, 188, 212, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        /* DataFrame Styles */
         .stDataFrame {
-            border: 1px solid #00bcd4;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 188, 212, 0.4);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 188, 212, 0.1);
+            background-color: rgba(13, 25, 42, 0.6);
+            backdrop-filter: blur(10px);
         }
-        /* Untuk input/select */
+
+        /* Input Styling */
         .stSelectbox>div>div>div>div>div {
-            background-color: rgba(30, 40, 50, 0.7);
-            border: 1px solid #00bcd4;
-            color: #e0f7fa;
-            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid #00bcd4 !important;
+            color: #00e5ff !important;
+            border-radius: 10px;
             padding: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -49,7 +70,7 @@ require_login()
 st.title("LogHistory Transaksi")
 st.write("Riwayat transaksi penukaran uang Anda.")
 
-# LOAD DATA JSON DIBANTU ASDOS
+# LOAD DATA JSON
 file_path = "transaction_history.json"
 
 if os.path.exists(file_path):
@@ -96,12 +117,11 @@ if transaksi:
     df_bulan = df_tahun[df_tahun["bulan"] == bulan_terpilih]
     st.dataframe(df_bulan, use_container_width=True)
 
-    # menampilkan grafik transaski dibantu oleh GPT
     st.subheader("📈 Grafik Profit per Transaksi (Bulanan)")
 
     chart_placeholder = st.empty()
 
-    # Matplotlib disesuaikan agar sesuai dengan tema gelap futuristik
+    # Matplotlib Theme Dark Cyberpunk
     fig, ax = plt.subplots(facecolor="#0f1c2c") 
 
     ax.plot(
@@ -122,7 +142,7 @@ if transaksi:
     ax.spines['bottom'].set_color('#00bcd4')
     ax.spines['left'].set_color('#00bcd4')
     ax.grid(axis='y', linestyle='--', alpha=0.5, color="#1a3a50")
-    ax.set_facecolor("#1e2a38") # Latar belakang area plot
+    ax.set_facecolor("#1e2a38") 
 
     chart_placeholder.pyplot(fig)
 

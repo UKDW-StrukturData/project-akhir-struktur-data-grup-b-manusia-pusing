@@ -3,69 +3,76 @@ import streamlit as st
 st.markdown("""
     <style>
         .stApp {
-            background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
+            background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
             color: #e0f7fa;
         }
         h1, h2, h3, h4 {
-            color: #00bcd4; /* Judul Neon */
-            text-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
+            color: #00bcd4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
         }
-        /* Glassmorphism Card (Mirip dengan yang ada, tapi disempurnakan) */
+        
+        /* Glassmorphism Card Settings */
         .card {
-            background: rgba(255, 255, 255, 0.05); /* Latar Belakang Transparan */
-            padding: 30px;
-            border-radius: 20px;
+            background: rgba(15, 28, 44, 0.65);
+            padding: 40px;
+            border-radius: 30px;
             color: white;
-            width: 90%;
+            width: 95%;
             margin: 30px auto;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(0, 188, 212, 0.25);
         }
+        
         .round-img {
             width: 140px;
             height: 140px;
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid #00bcd4; /* Border Neon */
-            box-shadow: 0 0 10px #00bcd4;
+            border: 4px solid #00bcd4;
+            box-shadow: 0 0 25px rgba(0, 188, 212, 0.5);
         }
+        
+        /* Buttons */
         .stButton>button {
-            background: #00bcd4;
+            background: linear-gradient(90deg, #00bcd4, #008ba3);
             color: #0f1c2c;
             font-weight: bold;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-top: 10px;
             transition: all 0.3s;
             border: none;
-            box-shadow: 0 0 5px #00bcd4;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
         }
         .stButton>button:hover {
-            background: #00e5ff;
-            box-shadow: 0 0 10px #00e5ff, 0 0 25px #00e5ff;
+            background: linear-gradient(90deg, #00e5ff, #00bcd4);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+            transform: scale(1.02);
         }
-        /* Tombol danger/primary */
+        
+        /* Primary Danger Button */
         .stButton button[kind="primary"] {
-            background-color: #ff4b4b !important;
-            box-shadow: 0 0 5px #ff4b4b;
+            background: linear-gradient(90deg, #ff4b4b, #c62828) !important;
+            box-shadow: 0 0 10px rgba(255, 75, 75, 0.4);
         }
-        .stButton button[kind="primary"]:hover {
-            background-color: #ff6e6e !important;
-            box-shadow: 0 0 10px #ff6e6e, 0 0 25px #ff6e6e;
-        }
-        /* Input/Selectbox */
+        
+        /* Inputs inside card */
         .stTextInput>div>div>input, .stSelectbox>div>div>div>div>div {
-            background-color: rgba(30, 40, 50, 0.7);
+            background-color: rgba(0, 0, 0, 0.4) !important;
             border: 1px solid #00bcd4;
             color: #e0f7fa;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
         }
     </style>
 """, unsafe_allow_html=True)
 
 
-# Fungsi GUARD dibantu untuk CHAT GPT
+# Fungsi GUARD
 def require_login():
     if "logged_in" not in st.session_state or st.session_state.logged_in is False:
         st.warning("Anda harus login untuk mengakses halaman ini.")
@@ -154,7 +161,7 @@ if st.button("LOGOUT", type="primary"):
 st.subheader("Manajemen Akun Permanen")
 
 if st.button("⚠️ Hapus Akun Permanen", type="primary"):
-    # Logika penghapusan kredensial (simulasi)
+    # Logika penghapusan kredensial
     if st.session_state.get("username") in st.session_state.get("CREDENTIALS", {}):
         del st.session_state.CREDENTIALS[st.session_state.username]
     

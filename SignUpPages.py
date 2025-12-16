@@ -4,48 +4,58 @@ def signup_page():
     st.markdown("""
         <style>
             .stApp {
-                background: linear-gradient(135deg, #0f1c2c, #0d0d0d);
+                background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
                 color: #e0f7fa;
             }
             .title {
                 text-align: center;
                 color: #00bcd4;
                 font-size: 2.5em;
+                font-weight: bold;
                 margin-top: 20px;
                 margin-bottom: 40px;
-                text-shadow: 0 0 10px #00bcd4, 0 0 20px #00bcd4;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 30px rgba(0, 188, 212, 0.4);
             }
             .stTextInput>div>div>input {
-                background-color: rgba(30, 40, 50, 0.7);
-                border: 1px solid #00bcd4;
-                color: #e0f7fa;
-                border-radius: 8px;
-                padding: 10px;
+                background-color: rgba(0, 0, 0, 0.5) !important;
+                border: 1px solid #00bcd4 !important;
+                color: #00e5ff !important;
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            }
+            .stTextInput>div>div>input:focus {
+                box-shadow: 0 0 15px rgba(0, 188, 212, 0.6), inset 0 0 10px rgba(0,0,0,0.5);
             }
             .stButton>button {
                 width: 100%;
-                background: #00bcd4;
+                background: linear-gradient(90deg, #00bcd4, #008ba3);
                 color: #0f1c2c;
                 font-weight: bold;
-                border-radius: 10px;
-                margin-top: 10px;
-                transition: all 0.3s;
+                border-radius: 14px;
+                margin-top: 15px;
+                padding: 12px ;
+                transition: all 0.3s ease-in-out;
                 border: none;
-                box-shadow: 0 0 5px #00bcd4, 0 0 15px #00bcd4;
+                box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
             }
             .stButton>button:hover {
-                background: #00e5ff;
-                box-shadow: 0 0 10px #00e5ff, 0 0 25px #00e5ff;
+                background: linear-gradient(90deg, #00e5ff, #00bcd4);
+                box-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
+                transform: scale(1.02);
             }
             .signup-card {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 20px;
-                padding: 40px;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+                background: rgba(15, 28, 44, 0.6);
+                border-radius: 25px;
+                padding: 50px;
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 1px solid rgba(0, 188, 212, 0.2);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
                 margin: auto;
-                max-width: 400px;
+                max-width: 450px;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -57,8 +67,6 @@ def signup_page():
     st.markdown('<div class="title">Buat Akun Baru</div>', unsafe_allow_html=True)
 
     with st.container():
-        # st.markdown('<div class="signup-card">', unsafe_allow_html=True)
-
         new_user = st.text_input("Username", key="signup_username")
         new_pass = st.text_input("Password", type="password", key="signup_password")
         confirm = st.text_input("Konfirmasi Password", type="password", key="signup_confirm")

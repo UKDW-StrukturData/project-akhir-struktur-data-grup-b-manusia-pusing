@@ -50,7 +50,7 @@ def require_login():
 require_login()
 username = st.session_state.get("username", "User")
 
-st.title(f"Selamat datang {username} di Halaman Home!")
+st.title(f"Selamat datang {username} di NuevaMoneda")
 st.subheader("Dashboard Nilai Tukar Dunia")
 
 # LOAD DATA JSON DARI FOLDER UTAMA
