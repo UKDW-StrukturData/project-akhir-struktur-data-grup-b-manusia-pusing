@@ -102,6 +102,10 @@ def signup_page():
             st.warning("Semua kolom wajib diisi.")
             return
 
+        if len(password) < 8:
+            st.warning("Password harus terdiri dari minimal 8 karakter.")
+            return
+        
         if password != confirm:
             st.warning("Password dan konfirmasi tidak sama.")
             return

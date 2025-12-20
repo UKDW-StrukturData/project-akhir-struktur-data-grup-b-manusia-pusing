@@ -68,9 +68,9 @@ with a:
     st.image("LogoNuevaMoneda.png", width=750)
 
 def require_login_page():
-    if not st.session_state.get("logged_in"):
+    if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
-        st.switch_page("LoginPages.py")
+        st.switch_page("App.py")
 
 require_login_page()
 

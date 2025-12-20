@@ -91,9 +91,9 @@ st.markdown("""
 
 # GUARD LOGIN DIBANTU GPT DAN ASDOS
 def require_login_page():
-    if not st.session_state.get("logged_in"):
+    if not st.session_state.get("logged_in", False):
         st.warning("Silakan login terlebih dahulu.")
-        st.switch_page("LoginPages.py")
+        st.switch_page("App.py")
 
 require_login_page()
 
@@ -158,13 +158,12 @@ else:
             st.session_state.show_change_username = False
 
 st.divider()
+st.subheader("Manajemen Akun")
 
 if st.button("LOGOUT", type="primary"):
     st.session_state.logged_in = False
     st.session_state.username = ""
-    st.switch_page("LoginPages.py")
-
-st.subheader("Manajemen Akun Permanen")
+    st.switch_page("App.py")
 
 if st.button("⚠️ Hapus Akun Permanen", type="primary"):
     delete_user(st.session_state.username)
